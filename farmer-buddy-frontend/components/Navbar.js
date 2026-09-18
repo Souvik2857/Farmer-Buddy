@@ -1,7 +1,13 @@
+"use client"
 import React from "react";
 import Image from "next/image";
-
+import NextAuth from "next-auth";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { signIn,signOut } from "next-auth/react";
 const Navbar = () => {
+  const {data:session}=useSession()
+
   return (
     <>
       <div className="flex items-center justify-between  bg-[#6B352A]">
@@ -15,7 +21,14 @@ const Navbar = () => {
           className="rounded-2xl m-2"
         ></Image>
         <p className="text-white text-3xl">Welcome</p>
-        <button className="border m-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] border-0 cursor-pointer">Login</button>
+        <div className="flex items-center gap-1 justify-center">
+        <div className="border pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500">Analyze</div>
+        {!session?
+        <Link className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] border-0 cursor-pointer hover:bg-green-500" href={"/login"}>Login</Link>
+      :<Link className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] border-0 cursor-pointer hover:bg-green-500" href={"/login"} onClick={()=>{signOut()}}>Logout</Link>
+      }
+        
+        </div>
       </div>
     </>
   );

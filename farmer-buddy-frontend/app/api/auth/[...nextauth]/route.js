@@ -11,8 +11,8 @@ export const authoptions =NextAuth({
   callbacks:{
     async signIn({user,email,account,profile,credentials}){
       if(account.provider==='google'){
-        await connectDB()
-        
+        await connectDB()    
+        return true
       }
     }
   }
