@@ -15,7 +15,7 @@ const Navbar = () => {
           className="rounded-2xl m-2"
         ></Image>
         <p className="text-white text-3xl">Welcome</p>
-        <button className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-amber-300 border-0">Login</button>
+        <button className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-amber-300 border-0 cursor-pointer">Login</button>
       </div>
     </>
   );
