@@ -11,4 +11,10 @@ app.use(express.urlencoded({extended:true,limit:'40kb'}))
 app.use(cookieParser())
 app.use(express.static('public'))
 
+//routes
+
+import userRouter from './routes/user.route.js';
+
+app.use("/upload",userRouter)
+
 export {app}
