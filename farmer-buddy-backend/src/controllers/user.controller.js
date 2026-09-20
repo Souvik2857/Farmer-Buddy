@@ -2,17 +2,23 @@ import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
-import { processed } from "../middleware/sharp.js";
+import { processedAvatar } from "../middleware/sharp.js";
 const newUser = async (req, res) => {
   try {
-    const picture=req.file.path
-    const proccessedPath=await processed(picture)
-    const picUrl=await uploadonCloudinary(proccessedPath)
+    const picture=req.file?.path
+    let picUrl
+    if(picture){
+      const proccessedPath=await processedAvatar(picture)
+      picUrl=await uploadonCloudinary(proccessedPath)
+    }
+    else{
+      picUrl=""
+    }
     const userNew = new userinfo({
       username: req.body.username,
       email: req.body.email,
       language: req.body.language,
-
+      avatar:picUrl,
       location: {
         city: req.body.city,
         country: req.body.country,
