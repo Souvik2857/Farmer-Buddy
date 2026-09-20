@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
 const userProfile = new mongoose.Schema({
-    username: {type: String, required: true},
+    Avatar: {type: String, deafult: ''},
+    Username: {type: String, required: true},
     email: {type: String, unique: true},
     language: {type: String, default: 'english'},
     location: {
