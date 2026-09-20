@@ -12,12 +12,10 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const pageName = pathname.split("/").filter(Boolean).pop();
-  const routeUser = (route) => {
-    router.push(`/${route}`);
-  };
+
   return (
     <>
-      <div className="flex items-center justify-between  bg-[#6B352A]">
+      <div className="grid grid-cols-3 items-center bg-[#6B352A] p-2">
         <Image
           src={
             "https://res.cloudinary.com/deuhdw4fr/image/upload/v1789709955/Farmer-buddy-image_l5morw.jpg"
@@ -25,10 +23,12 @@ const Navbar = () => {
           alt="Image not loaded"
           width={90}
           height={90}
-          className="rounded-2xl m-2"
+          className="rounded-2xl ml-2 mt-2 mb-2  justify-self-start"
         ></Image>
-        <p className="text-white text-3xl">{pageName}</p>
-        <div className="flex items-center gap-1 justify-center">
+        <div className="justify-self-center text-white text-3x">{!pageName?"":(
+          <div className="w-90 border p-5 rounded-2xl bg-[#FFF1A6]"><p className="text-center text-3xl font-bold text-green-500 ">Farmer Buddy</p></div>
+        )}</div>
+        <div className="justify-self-end flex items-center gap-1">
           {!session ? (
             <div className="border pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500">
               Analyze

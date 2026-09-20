@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <SessionWrapper>
           <Navbar></Navbar>
-          <div className="min-h-[84.5vh] bg-[#FFF1A6]">{children}</div>
+          <div className="min-h-[82.5vh] bg-[#FFF1A6]">{children}</div>
           <Footer></Footer>
         </SessionWrapper>
       </body>

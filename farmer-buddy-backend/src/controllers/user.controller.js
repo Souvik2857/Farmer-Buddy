@@ -70,4 +70,4 @@ const getHist = async (req, res) => {
   }
 };
 
-export{newUser}
+export{newUser,getUser,getHist}
