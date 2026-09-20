@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
-
+import { uploadonCloudinary } from "../utils/cloudinary.js";
+import { processed } from "../middleware/sharp.js";
 const newUser = async (req, res) => {
   try {
+    const picture=req.file.path
+    const proccessedPath=await processed(picture)
+    const picUrl=await uploadonCloudinary(proccessedPath)
     const userNew = new userinfo({
-      Username: req.body.Username,
+      username: req.body.username,
       email: req.body.email,
       language: req.body.language,
 
@@ -15,12 +19,13 @@ const newUser = async (req, res) => {
       },
     });
     await userNew.save();
-    return res.json({ success: true,status:200, user: saved });
+    return res.json({ success: true,status:200, user: userNew });
   } catch (err) {
     console.error("An error occured", err.message);
     return res.status(500).json({ success: false,status:500, error: err.message });
   }
-};
+}
+
 
 const getUser = async (req, res) => {
   try {
@@ -58,3 +63,5 @@ const getHist = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+export{newUser}
