@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
+import { processed } from "../middleware/sharp.js";
+import { userInfo } from "os";
 import { processedAvatar } from "../middleware/sharp.js";
 const newUser = async (req, res) => {
   try {
@@ -70,4 +72,52 @@ const getHist = async (req, res) => {
   }
 };
 
+const updateUser = async(req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const updateAllowed = ['Username', 'email', 'language', 'location'];
+    const setFields = {};
+
+    for(let key of updateAllowed){
+      if(updates[key] == undefined){
+        setFields[key] = updates[key];
+      }
+    }
+
+    if(updates.location?.city){
+      setFields['location.city'] = updates.location.city;
+    }
+
+    if(updates.location?.country){
+      setFields['location.country'] = updates.location.country;
+    }
+
+    const updated = await userInfo.findByIdAndUpdate(
+      id,
+      {$set: setFields},
+      {new: true, runValidators: true}
+    );
+
+    if(!updated){
+      return res.status(404).json({error: 'Could Not Update Profile'});
+    }
+
+    await userConvo.create({
+      userID: updated._id,
+      conversation: {
+        user: `Updated Fields: ${Object.keys(setFields).join('')}`,
+        gemini: `Updated Records`
+      }
+    });
+    res.json({success: true, user: updated});
+  }catch(err){
+    console.log('Updation Failed', err.message);
+    res.status(500).json({success: false, error: err.message});
+  }
+};
+
+export{newUser};
+export{updateUser};
 export{newUser,getUser,getHist}
