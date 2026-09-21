@@ -2,7 +2,7 @@ import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
 
-const processed = async (filePath) => {
+const processedAvatar = async (filePath) => {
   try {
     const absolutePath = path.resolve(filePath);
     const tempPath = absolutePath + ".tmp"; 
@@ -11,15 +11,13 @@ const processed = async (filePath) => {
       .resize({
         width: 300,
         height: 400,
-        fit: "contain",
+        fit: "cover",
       })
       .toFile(tempPath);
 
     await fs.unlink(absolutePath);
 
     await fs.rename(tempPath, absolutePath);
-
-    console.log("Image processed:", absolutePath);
     return absolutePath;
 
   } catch (err) {
@@ -28,4 +26,4 @@ const processed = async (filePath) => {
   }
 };
 
-export { processed };
+export { processedAvatar };
