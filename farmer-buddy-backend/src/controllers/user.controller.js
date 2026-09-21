@@ -5,6 +5,7 @@ import { uploadonCloudinary } from "../utils/cloudinary.js";
 import { processed } from "../middleware/sharp.js";
 import { userInfo } from "os";
 import { processedAvatar } from "../middleware/sharp.js";
+
 const newUser = async (req, res) => {
   try {
     const picture=req.file?.path
