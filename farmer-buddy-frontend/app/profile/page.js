@@ -10,6 +10,7 @@ const page = () => {
   if (session == null) {
     router.push("/login");
   }
+  const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("/avatar.svg");
   const [formData, setForm] = useState({ username: "", email: "" });
   const avatar = useRef();
@@ -20,6 +21,7 @@ const page = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedFile(file)
       setPreview(URL.createObjectURL(file));
     }
   };
@@ -27,11 +29,12 @@ const page = () => {
     setForm({ ...formData, [e.target.name]: e.target.value });
   };
   const form = new FormData();
-  form.append("avatar", preview);
+
+  const sendData=async()=>{
+  form.append("avatar", selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
-  const sendData=async()=>{
- 
+  
   }
 
   return (
