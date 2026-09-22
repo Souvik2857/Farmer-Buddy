@@ -39,7 +39,7 @@ const newUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const userInfo = new userinfo({
-      Username: req.body.Username,
+      userName: req.body.Username,
       email: req.body.email,
       language: req.body.language,
 
@@ -74,48 +74,33 @@ const getHist = async (req, res) => {
 };
 
 const updateUser = async(req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+  try{
+    const { email } = req.body;
+    const { userName, language, location } = req.body;
 
-    const updateAllowed = ['Username', 'email', 'language', 'location'];
-    const setFields = {};
+    // const setFields = {
+    //   ...(userName !== undefined && { userName }),
+    //   ...(language !== undefined && { language }),
+    //   ...(location?.city !== undefined && { 'location.city': location.city }),
+    //   ...(location?.country !== undefined && { 'location.country': location.country })
+    // };
+    
+    const findUser = await userinfo.findOne({ email });
 
-    for(let key of updateAllowed){
-      if(updates[key] == undefined){
-        setFields[key] = updates[key];
-      }
+    if(!findUser){
+      res.status(404).json({error: 'User Not Found'});
+    }else{
+      const updated = await userinfo.findOneAndReplace(
+        { email },
+        { $set: req.body },
+        { new: true, runValidators: true }
+      );
     }
 
-    if(updates.location?.city){
-      setFields['location.city'] = updates.location.city;
-    }
-
-    if(updates.location?.country){
-      setFields['location.country'] = updates.location.country;
-    }
-
-    const updated = await userInfo.findByIdAndUpdate(
-      id,
-      {$set: setFields},
-      {new: true, runValidators: true}
-    );
-
-    if(!updated){
-      return res.status(404).json({error: 'Could Not Update Profile'});
-    }
-
-    await userConvo.create({
-      userID: updated._id,
-      conversation: {
-        user: `Updated Fields: ${Object.keys(setFields).join('')}`,
-        gemini: `Updated Records`
-      }
-    });
-    res.json({success: true, user: updated});
+    if(!updated) return res.status(404).json({error: 'User not found'});
   }catch(err){
-    console.log('Updation Failed', err.message);
-    res.status(500).json({success: false, error: err.message});
+    console.error('Updatation Failed', err.message);
+    res.status(500).json({error: err.message});
   }
 };
 
