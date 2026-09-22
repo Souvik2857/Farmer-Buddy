@@ -4,7 +4,8 @@ import cookieParser from 'cookie-parser'
 
 const app=express();
 app.use(cors({
-    original:process.env.CORS_ORIGIN
+    origin:process.env.CORS_ORIGIN,
+    credentials:true
 }))
 app.use(express.json({limit:'40kb'}))
 app.use(express.urlencoded({extended:true,limit:'40kb'}))
@@ -15,6 +16,6 @@ app.use(express.static('public'))
 
 import userRouter from './routes/user.route.js';
 
-app.use("/upload",userRouter)
+app.use("/api/v1/user",userRouter)
 
-export {app}
+export default app

@@ -10,10 +10,26 @@ const page = () => {
   if (session == null) {
     router.push("/login");
   }
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("/avatar.svg");
-  const [formData, setForm] = useState({ username: "", email: "" });
+  const [formData, setForm] = useState({});
   const avatar = useRef();
+  const getUserData=async()=>{
+    const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
+      credentials:"include"
+    })
+    const data=await res.json()
+    setForm({...formData,data})
+    console.log(formData);
+    
+  }
+  useEffect(() => {
+    getUserData()
+  }, [])
+   
+  
+
 
   const fileTrigger = () => {
     avatar.current.click();

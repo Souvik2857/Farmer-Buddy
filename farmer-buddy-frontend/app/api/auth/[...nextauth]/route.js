@@ -2,13 +2,18 @@ import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { connectDB } from '@/db/connectDB'
 import { userinfo } from '@/models/User'
-export const authoptions =NextAuth({
+export const authoptions ={
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET
     })
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 15 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
   callbacks:{
     async signIn({user,email,account,profile,credentials}){
       if(account.provider==='google'){
@@ -30,5 +35,6 @@ export const authoptions =NextAuth({
       return session
     }
   }
-})
-export {authoptions as GET,authoptions as POST}
+}
+const handler = NextAuth(authoptions);
+export { handler as GET, handler as POST }

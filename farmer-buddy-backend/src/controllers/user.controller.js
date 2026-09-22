@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
-import { processed } from "../middleware/sharp.js";
-import { userInfo } from "os";
 import { processedAvatar } from "../middleware/sharp.js";
 
 const newUser = async (req, res) => {
@@ -38,18 +36,15 @@ const newUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const userInfo = new userinfo({
-      userName: req.body.Username,
-      email: req.body.email,
-      language: req.body.language,
-
-      location: {
-        city: req.body.city,
-        country: req.body.country,
-      },
-    });
-    await userInfo.save();
-    return res.json({ status: 200, user });
+    const user=req.user
+    console.log(user.email);
+    
+    const userData=await userinfo.findOne({email:"sarkarsouvik2343@gmail.com"})
+    console.log(userData);
+    if(!userData){
+      return res.status(404).json({status:404,message:"User not found"})
+    }
+   return res.json({ status: 200, userData });
   } catch (err) {
     console.error(`Save Failed`, err.message);
     res.status(500).json({ success: false, error: err.message });
@@ -95,6 +90,7 @@ const updateUser = async(req, res) => {
         { $set: req.body },
         { new: true, runValidators: true }
       );
+      return res.status(201).json({status:201,message:"user updated successfully"})
     }
 
     if(!updated) return res.status(404).json({error: 'User not found'});
@@ -104,6 +100,5 @@ const updateUser = async(req, res) => {
   }
 };
 
-export{newUser};
-export{updateUser};
-export{newUser,getUser,getHist}
+
+export{newUser,getUser,getHist,updateUser}
