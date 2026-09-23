@@ -33,18 +33,14 @@ const newUser = async (req, res) => {
   }
 }
 
-
 const getUser = async (req, res) => {
   try {
     const user=req.user
-    console.log(user.email);
-    
-    const userData=await userinfo.findOne({email:"sarkarsouvik2343@gmail.com"})
-    console.log(userData);
+    const userData=await userinfo.findOne({email:user.email})   
     if(!userData){
       return res.status(404).json({status:404,message:"User not found"})
     }
-   return res.json({ status: 200, userData });
+   return res.json({ status: 200,userData});
   } catch (err) {
     console.error(`Save Failed`, err.message);
     res.status(500).json({ success: false, error: err.message });

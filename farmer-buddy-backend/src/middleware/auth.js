@@ -6,6 +6,7 @@ async function auth(req,res,next){
             req,
             secret:process.env.NEXTAUTH_SECRET
     })
+    
         if(!token){
             return res.status(401).json({ status: 401, message: "Unauthorized" })
         }

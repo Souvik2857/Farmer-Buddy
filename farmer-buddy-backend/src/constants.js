@@ -1,1 +1,1 @@
-export const DB_NAME="Farmer-Buddy"
+export const DB_NAME="farmer-buddy"

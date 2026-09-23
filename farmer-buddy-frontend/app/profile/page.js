@@ -15,19 +15,56 @@ const page = () => {
   const [preview, setPreview] = useState("/avatar.svg");
   const [formData, setForm] = useState({});
   const avatar = useRef();
+  function getUserLocation() {
+  if (!navigator.geolocation) {
+    console.error("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude, accuracy } = position.coords;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      console.log(`Accuracy: within ${accuracy} meters`);
+    },
+    (error) => {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          console.error("User denied the request for Geolocation.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          console.error("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          console.error("The request to get user location timed out.");
+          break;
+        default:
+          console.error("An unknown error occurred.");
+      }
+    },
+    {
+      enableHighAccuracy: true, 
+      timeout: 30000,           
+      maximumAge: 0             
+    }
+  );
+}
   const getUserData=async()=>{
     const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
       credentials:"include"
     })
     const data=await res.json()
-    setForm({...formData,data})
-    console.log(formData);
-    
+    setForm(data.userData) 
   }
   useEffect(() => {
+    getUserLocation()
     getUserData()
   }, [])
-   
+  useEffect(() => {
+    
+
+  }, [formData])
+  
   
 
 
@@ -94,9 +131,9 @@ const page = () => {
           <p>Email</p>
           <input
             type="text"
+            readOnly
             className="border w-80"
             value={formData.email}
-            onChange={handleChange}
             name="email"
             placeholder="Place Email"
             />
