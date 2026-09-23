@@ -3,6 +3,7 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import { getUserLanguage } from "@/utils/languageDetection.js";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
@@ -14,47 +15,9 @@ const page = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("/avatar.svg");
   const [formData, setForm] = useState({});
+  const [userData, setUserData] = useState({})
   const avatar = useRef();
-function getUserLocation() {
-  return new Promise((resolve, reject) => {  
 
-    if (!navigator.geolocation) {
-      console.error("Geolocation is not supported by your browser.");
-      reject(new Error("Geolocation not supported"));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-        console.log(`Accuracy: within ${accuracy} meters`);
-        resolve({ latitude, longitude, accuracy }); 
-      },
-      (error) => {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            reject(new Error("User denied the request for Geolocation."));
-            break;
-          case error.POSITION_UNAVAILABLE:
-            reject(new Error("Location information is unavailable."));
-            break;
-          case error.TIMEOUT:
-            reject(new Error("The request to get user location timed out."));
-            break;
-          default:
-            reject(new Error("An unknown error occurred."));
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 30000,
-        maximumAge: 0
-      }
-    );
-
-  });
-}
   const getUserData=async()=>{
     const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
       credentials:"include"
@@ -63,13 +26,29 @@ function getUserLocation() {
     setForm(data.userData) 
   }
   useEffect(() => {
-    const {latitude,longitude}=getUserLocation()
+    const getIpApi=async()=>{
+      const resLatLong=await fetch('https://ipapi.co/latlong/')
+      const resCity=await fetch('https://ipapi.co/city/')
+      const resState=await fetch('https://ipapi.co/region/')
+      const latlong=await resLatLong.text()
+      const dataCity=await resCity.text()
+      const state=await resState.text()
+      const latitude=latlong.split(',')[0]
+      const longitude=latlong.split(',')[1]
+      const language=getUserLanguage(state)
+      setUserData({"location":dataCity+","+state,
+                "language":language.language
+      })
+      
+    }
+    getIpApi()
     getUserData()
   }, [])
   useEffect(() => {
     
 
   }, [formData])
+
   
   
 
@@ -147,11 +126,11 @@ function getUserLocation() {
           <div>
 
           <p>Language</p>
-          <input type="text" className="border w-80" />
+          <input type="text" value={typeof userData.language!=="object"?userData?.language:""} className="border w-80" />
           </div>
           <div>
           <p>Location</p>
-          <input type="text" className="border w-80 " />
+          <input type="text" value={typeof userData.location!=="object"?userData?.location:""} className="border w-80 " />
           </div>
           <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 pl-6 pr-6 rounded-xl mt-2 text-white cursor-pointer">Save</button>
         </div>
