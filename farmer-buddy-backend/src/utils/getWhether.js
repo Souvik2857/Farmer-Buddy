@@ -6,8 +6,8 @@ const getwhether = async (latitude, longitude) => {
         if(!user){
             return res.status(404).json({error: 'User not found'});
         }
-        const weatherRes = await fetch('http://api.weatherapi.com/v1/current.json?key=${process.env.WEATHERAPI_KEY}&q=${encodeURIComponent(city)');
-        const weatherData = await weatherRes.json;
+        const weatherRes = await fetch('http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHERAPI_KEY}&q=${lat},${lon},${laencodeURIComponent(city)&days=3');
+        const weatherData = weatherRes.json;
 
         if(weatherData.error){
             return res.status(400).json({success: false, error: weatherData.error.message});
