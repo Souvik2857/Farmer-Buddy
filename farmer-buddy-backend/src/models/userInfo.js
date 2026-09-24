@@ -8,6 +8,11 @@ const userProfile = new mongoose.Schema({
     location: {
         city: {type: String, default: ''},
         country: {type: String, default: ''}
+    },
+
+    cordinates: {
+        latitude: String,
+        longitude: String
     }
 });
 
