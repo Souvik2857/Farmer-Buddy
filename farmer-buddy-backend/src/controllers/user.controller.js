@@ -3,6 +3,7 @@ import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
 import { processedAvatar } from "../middleware/sharp.js";
+import { getWeather } from "../utils/getWeather.js";
 
 const newUser = async (req, res) => {
   try {
@@ -96,5 +97,17 @@ const updateUser = async(req, res) => {
   }
 };
 
+const weatherHandler = async(req, res) => {
+  try {
+    const {lat, lon} = req.body;
+    const data = await getWeather(lat, lon);
+    if(!lat || !lon){
+      res.status(404).json({error: 'latitude, longitude required'});
+    }
+    return res.status(200).json({...data });
+  }catch(err){
+    return res.status(500).json({error: err.message});
+  }
+};
 
 export{newUser,getUser,getHist,updateUser}
