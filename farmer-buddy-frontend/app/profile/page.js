@@ -24,22 +24,28 @@ const page = () => {
     })
     const data=await res.json()
     setForm(data.userData) 
+    setSelectedFile(data.userData.avatar)
   }
+  let dataCity
+  let latitude
+  let longitude
+  let language
   useEffect(() => {
     const getIpApi=async()=>{
-      const resLatLong=await fetch('https://ipapi.co/latlong/')
-      const resCity=await fetch('https://ipapi.co/city/')
-      const resState=await fetch('https://ipapi.co/region/')
-      const latlong=await resLatLong.text()
-      const dataCity=await resCity.text()
-      const state=await resState.text()
-      const latitude=latlong.split(',')[0]
-      const longitude=latlong.split(',')[1]
-      const language=getUserLanguage(state)
-      setUserData({"location":dataCity+","+state,
-                "language":language.language
+      const ipApi=await fetch('https://ipapi.co/json/')
+      const data=await ipApi.json()
+      dataCity=data.city
+      const state=data.region
+      const country=data.country_name
+      latitude=data.latitude
+      longitude=data.longitude
+      language=getUserLanguage(state)
+      setUserData({"location":dataCity,
+                "language":language.language,
+                "latitude":latitude,
+                "longitude":longitude,
+                "country":country
       })
-      
     }
     getIpApi()
     getUserData()
@@ -48,10 +54,6 @@ const page = () => {
     
 
   }, [formData])
-
-  
-  
-
 
   const fileTrigger = () => {
     avatar.current.click();
@@ -66,12 +68,31 @@ const page = () => {
   const handleChange = (e) => {
     setForm({ ...formData, [e.target.name]: e.target.value });
   };
-  const form = new FormData();
-
+  
   const sendData=async()=>{
-  form.append("avatar", selectedFile);
+  const form = new FormData();
+  form.append("avatar",selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
+  form.append("location", userData.location)
+  form.append("country", userData.country)
+  form.append("language", userData.language)
+  form.append("latitude", userData.latitude)
+  form.append("longitude", userData.longitude)
+
+
+  const res=await fetch("http://localhost:5000/api/v1/user/updateUser",
+    {
+      credentials:"include",
+      method:"PUT",
+      body:form
+    },
+    
+  )
+  const data=await res.json()
+  if(data.status>=200){
+    alert("user information saved successfully")
+  }
   
   }
 
@@ -86,7 +107,7 @@ const page = () => {
           }}
         >
           <Image
-            src={preview}
+            src={formData.avatar?.length>0?`${formData.avatar}`.replace('http://', 'https://'):preview}
             alt="profile"
             fill
             className="object-cover"
@@ -126,11 +147,11 @@ const page = () => {
           <div>
 
           <p>Language</p>
-          <input type="text" value={typeof userData.language!=="object"?userData?.language:""} className="border w-80" />
+          <input type="text" value={formData.language?formData.language:userData.language} className="border w-80" />
           </div>
           <div>
           <p>Location</p>
-          <input type="text" value={typeof userData.location!=="object"?userData?.location:""} className="border w-80 " />
+          <input type="text" value={formData.location?.city?formData.location?.city:userData.location} className="border w-80 " />
           </div>
           <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 pl-6 pr-6 rounded-xl mt-2 text-white cursor-pointer">Save</button>
         </div>

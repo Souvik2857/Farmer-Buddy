@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
-import { uploadonCloudinary } from "../utils/cloudinary.js";
+import { deleteImageOnCloudinary, uploadonCloudinary } from "../utils/cloudinary.js";
 import { processedAvatar } from "../middleware/sharp.js";
 import { getWeather, getSoilData } from "../utils/getWeather.js";
 
@@ -67,8 +67,9 @@ const getHist = async (req, res) => {
 
 const updateUser = async(req, res) => {
   try{
-    const { email } = req.body;
-    const { userName, language, location } = req.body;
+    const { email } = req.user;
+    
+    // const { username, language, location } = req.body;
 
     // const setFields = {
     //   ...(userName !== undefined && { userName }),
@@ -76,19 +77,42 @@ const updateUser = async(req, res) => {
     //   ...(location?.city !== undefined && { 'location.city': location.city }),
     //   ...(location?.country !== undefined && { 'location.country': location.country })
     // };
-    
+    const avatar=req.file?.path
+    let avatarURL;
+    if(avatar){
+      avatarURL=await uploadonCloudinary(avatar)
+    }
     const findUser = await userinfo.findOne({ email });
-
+    
     if(!findUser){
       res.status(404).json({error: 'User Not Found'});
-    }else{
+    }
+    
+    const preUrl=findUser.avatar
+    if(preUrl!=""){
+      await deleteImageOnCloudinary(preUrl)
+    }
       const updated = await userinfo.findOneAndReplace(
         { email },
-        { $set: req.body },
-        { new: true, runValidators: true }
+        {
+          avatar:avatarURL,
+          username: req.body?.username,
+          email: email,
+          language: req.body?.language,
+          location: {
+            city: req.body?.location || "",
+            country: req.body?.country || ''
+          },
+
+    cordinates: {
+        latitude: req.body?.latitude || "",
+        longitude: req.body?.longitude || ""
+    }
+        },
+        { returnDocument:"after", runValidators: true }
       );
       return res.status(201).json({status:201,message:"user updated successfully"})
-    }
+    
 
     if(!updated) return res.status(404).json({error: 'User not found'});
   }catch(err){

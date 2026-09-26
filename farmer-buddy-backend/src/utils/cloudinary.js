@@ -25,10 +25,14 @@ const uploadonCloudinary=async(localFilePath)=>{
 
 const deleteImageOnCloudinary=async(imageUrl)=>{
     try {
-        if(!localFilePath){
+        if(!imageUrl){
             return null
         }
-        const response=await cloudinary.uploader.destroy(imageUrl)
+          const publicId = imageUrl
+            .split('/')
+            .pop()
+            .split('.')[0]
+        const response=await cloudinary.uploader.destroy(publicId)
         return true
         
     } catch (error) {
