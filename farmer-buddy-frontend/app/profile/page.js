@@ -24,6 +24,7 @@ const page = () => {
     })
     const data=await res.json()
     setForm(data.userData) 
+    setSelectedFile(data.userData.avatar)
   }
   let dataCity
   let latitude
@@ -35,11 +36,15 @@ const page = () => {
       const data=await ipApi.json()
       dataCity=data.city
       const state=data.region
+      const country=data.country_name
       latitude=data.latitude
       longitude=data.longitude
       language=getUserLanguage(state)
       setUserData({"location":dataCity,
-                "language":language.language
+                "language":language.language,
+                "latitude":latitude,
+                "longitude":longitude,
+                "country":country
       })
     }
     getIpApi()
@@ -66,16 +71,15 @@ const page = () => {
   
   const sendData=async()=>{
   const form = new FormData();
-  form.append("avatar", formData.avatar.length>0?formData.avatar:selectedFile);
+  form.append("avatar",selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
-  form.append("location", dataCity)
-  form.append("language", language)
-  form.append("latitude", latitude)
-  form.append("longitude", longitude)
-  for (const [key, value] of form.entries()) {
-  console.log(key, value);
-}
+  form.append("location", userData.location)
+  form.append("country", userData.country)
+  form.append("language", userData.language)
+  form.append("latitude", userData.latitude)
+  form.append("longitude", userData.longitude)
+
 
   const res=await fetch("http://localhost:5000/api/v1/user/updateUser",
     {
@@ -86,7 +90,9 @@ const page = () => {
     
   )
   const data=await res.json()
-  console.log(data);
+  if(data.status>=200){
+    alert("user information saved successfully")
+  }
   
   }
 
@@ -141,11 +147,11 @@ const page = () => {
           <div>
 
           <p>Language</p>
-          <input type="text" value={typeof userData.language!=="object"?userData?.language:""} className="border w-80" />
+          <input type="text" value={formData.language?formData.language:userData.language} className="border w-80" />
           </div>
           <div>
           <p>Location</p>
-          <input type="text" value={typeof userData.location!=="object"?userData?.location:""} className="border w-80 " />
+          <input type="text" value={formData.location?.city?formData.location?.city:userData.location} className="border w-80 " />
           </div>
           <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 pl-6 pr-6 rounded-xl mt-2 text-white cursor-pointer">Save</button>
         </div>

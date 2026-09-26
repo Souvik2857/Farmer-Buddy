@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
-import { uploadonCloudinary } from "../utils/cloudinary.js";
+import { deleteImageOnCloudinary, uploadonCloudinary } from "../utils/cloudinary.js";
 import { processedAvatar } from "../middleware/sharp.js";
 import { getWeather } from "../utils/getWeather.js";
 
@@ -68,7 +68,6 @@ const getHist = async (req, res) => {
 const updateUser = async(req, res) => {
   try{
     const { email } = req.user;
-    console.log(email);
     
     // const { username, language, location } = req.body;
 
@@ -84,9 +83,14 @@ const updateUser = async(req, res) => {
       avatarURL=await uploadonCloudinary(avatar)
     }
     const findUser = await userinfo.findOne({ email });
-
+    
     if(!findUser){
       res.status(404).json({error: 'User Not Found'});
+    }
+    
+    const preUrl=findUser.avatar
+    if(preUrl!=""){
+      await deleteImageOnCloudinary(preUrl)
     }
       const updated = await userinfo.findOneAndReplace(
         { email },

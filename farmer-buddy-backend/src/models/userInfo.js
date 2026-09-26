@@ -4,10 +4,10 @@ const userProfile = new mongoose.Schema({
     avatar: {type: String, default: ''},
     username: {type: String, required: true},
     email: {type: String, unique: true},
-    language: {type: String, default: 'english'},
+    language: {type: String, default: null},
     location: {
-        city: {type: String, default: ''},
-        country: {type: String, default: ''}
+        city: {type: String, default: null},
+        country: {type: String, default: null}
     },
 
     cordinates: {
