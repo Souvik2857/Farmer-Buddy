@@ -1,6 +1,6 @@
-const getwhether = async (latitude, longitude) => {
+const getWeather = async (latitude, longitude) => {
     try{
-        const weatherRes = await fetch('http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHERAPI_KEY}&q=${lat},${lon}&days=3');
+        const weatherRes = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHERAPI_KEY}&q=${lat},${lon}&days=3`);
         const weatherData = weatherRes.json;
 
         if(weatherData.error){
@@ -17,4 +17,4 @@ const getwhether = async (latitude, longitude) => {
     }
 };
 
-export { getwhether };
+export { getWeather };

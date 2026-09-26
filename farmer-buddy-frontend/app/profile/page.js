@@ -25,21 +25,22 @@ const page = () => {
     const data=await res.json()
     setForm(data.userData) 
   }
+  let dataCity
+  let latitude
+  let longitude
+  let language
   useEffect(() => {
     const getIpApi=async()=>{
-      const resLatLong=await fetch('https://ipapi.co/latlong/')
-      const resCity=await fetch('https://ipapi.co/city/')
-      const resState=await fetch('https://ipapi.co/region/')
-      const latlong=await resLatLong.text()
-      const dataCity=await resCity.text()
-      const state=await resState.text()
-      const latitude=latlong.split(',')[0]
-      const longitude=latlong.split(',')[1]
-      const language=getUserLanguage(state)
-      setUserData({"location":dataCity+","+state,
+      const ipApi=await fetch('https://ipapi.co/json/')
+      const data=await ipApi.json()
+      dataCity=data.city
+      const state=data.region
+      latitude=data.latitude
+      longitude=data.longitude
+      language=getUserLanguage(state)
+      setUserData({"location":dataCity,
                 "language":language.language
       })
-      
     }
     getIpApi()
     getUserData()
@@ -48,10 +49,6 @@ const page = () => {
     
 
   }, [formData])
-
-  
-  
-
 
   const fileTrigger = () => {
     avatar.current.click();
@@ -66,12 +63,30 @@ const page = () => {
   const handleChange = (e) => {
     setForm({ ...formData, [e.target.name]: e.target.value });
   };
-  const form = new FormData();
-
+  
   const sendData=async()=>{
-  form.append("avatar", selectedFile);
+  const form = new FormData();
+  form.append("avatar", formData.avatar.length>0?formData.avatar:selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
+  form.append("location", dataCity)
+  form.append("language", language)
+  form.append("latitude", latitude)
+  form.append("longitude", longitude)
+  for (const [key, value] of form.entries()) {
+  console.log(key, value);
+}
+
+  const res=await fetch("http://localhost:5000/api/v1/user/updateUser",
+    {
+      credentials:"include",
+      method:"PUT",
+      body:form
+    },
+    
+  )
+  const data=await res.json()
+  console.log(data);
   
   }
 
@@ -86,7 +101,7 @@ const page = () => {
           }}
         >
           <Image
-            src={preview}
+            src={formData.avatar?.length>0?`${formData.avatar}`.replace('http://', 'https://'):preview}
             alt="profile"
             fill
             className="object-cover"
