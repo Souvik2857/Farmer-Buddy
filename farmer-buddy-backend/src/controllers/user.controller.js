@@ -3,7 +3,7 @@ import { userinfo } from "../models/userInfo.js";
 import { userConvo } from "../models/userHistory.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
 import { processedAvatar } from "../middleware/sharp.js";
-import { getWeather } from "../utils/getWeather.js";
+import { getWeather, getSoilData } from "../utils/getWeather.js";
 
 const newUser = async (req, res) => {
   try {
@@ -106,6 +106,20 @@ const weatherHandler = async(req, res) => {
     }
     return res.status(200).json({...data });
   }catch(err){
+    return res.status(500).json({error: err.message});
+  }
+};
+
+const soilDataHandler = async(req, res) => {
+  try {
+    const { lat, lon, startDate, endDate } = req.body;
+    const soil = await Promise.all([
+      getSoilData(lat, lon, startDate, endDate)
+    ]);
+
+    return res.json({success: true, soil});
+  }catch(err){
+    console.log('Soil Data Fetching failed', err.message);
     return res.status(500).json({error: err.message});
   }
 };
