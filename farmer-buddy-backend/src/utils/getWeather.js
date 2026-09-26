@@ -17,9 +17,6 @@ const getWeather = async (latitude, longitude) => {
     }
 };
 
-
-export { getWeather };
-
 //---------Soil Data Collector--------//
 
 const getSoilData = async(latitude, longitude, startDate, endDate) => {
