@@ -30,9 +30,9 @@ const Navbar = () => {
         )}</div>
         <div className="justify-self-end flex items-center gap-1">
           {!session ? (
-            <div className="border pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500">
+            <Link href={'/analyze'} className="border pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500">
               Analyze
-            </div>
+            </Link>
           ) : (
             <select
               className="border-0 p-3 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500"

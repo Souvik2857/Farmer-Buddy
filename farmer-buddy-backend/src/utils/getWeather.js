@@ -34,4 +34,4 @@ const getSoilData = async(latitude, longitude, startDate, endDate) => {
     }
 }
 
-export { getwhether, getSoilData };
+export { getWeather, getSoilData };
