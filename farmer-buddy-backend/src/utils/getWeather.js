@@ -17,6 +17,7 @@ const getwhether = async (latitude, longitude) => {
     }
 };
 
+//---------Soil Data Collector--------//
 
 const getSoilData = async(latitude, longitude, startDate, endDate) => {
     try{
@@ -29,7 +30,7 @@ const getSoilData = async(latitude, longitude, startDate, endDate) => {
 
         return soilData;
     }catch(err){
-        console.err('Problem Occurd while Soil Data fetching');
+        console.err('Problem Occurd while Soil Data fetching', err.message);
     }
 }
 
