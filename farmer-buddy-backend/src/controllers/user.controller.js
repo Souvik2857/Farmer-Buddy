@@ -4,6 +4,7 @@ import { userConvo } from "../models/userHistory.js";
 import { deleteImageOnCloudinary, uploadonCloudinary } from "../utils/cloudinary.js";
 import { processedAvatar } from "../middleware/sharp.js";
 import { getWeather, getSoilData } from "../utils/getWeather.js";
+import languageDetect from "../utils/languageDetection.js";
 
 const newUser = async (req, res) => {
   try {
@@ -147,5 +148,9 @@ const soilDataHandler = async(req, res) => {
     return res.status(500).json({error: err.message});
   }
 };
+
+
+
+
 
 export{newUser,getUser,getHist,updateUser}

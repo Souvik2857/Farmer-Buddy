@@ -6,25 +6,64 @@ import { getUserLanguage } from "@/utils/languageDetection";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
-  const [langCode, setLangCode] = useState("");
+  const [isListening, setIsListening] = useState(false)
+  function startSpeechRecognition(bcp47Code) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  useEffect(() => {
-    const getIpApi = async () => {
-      const ipApi = await fetch("https://ipapi.co/json/");
-      const data = await ipApi.json();
-      const state = data.region;
-      const language = getUserLanguage(state);
-      setLangCode(language.bcp47|| "en-IN") ;
-      console.log(langCode);
-      
-    };
-    getIpApi()
-  }, []);
-  useEffect(() => {
-   console.log(langCode);
-   
-  }, [langCode])
-  
+  if (!SpeechRecognition) {
+    console.error('Speech Recognition not supported in this browser.');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = bcp47Code;       // e.g. 'bn-IN', 'ta-IN', 'te-IN'
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = (event) => {
+    let interimText = '';
+    let finalText = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+        finalText += transcript;  // Confirmed words
+      } else {
+        interimText += transcript; // Live/partial words
+      }
+    }
+
+    console.log('LIVE (interim):', interimText);
+    console.log('FINAL:', finalText);
+  };
+
+  recognition.onerror = (event) => {
+    console.error('Error:', event.error);
+  };
+
+  recognition.onend = () => {
+    console.log('Recognition stopped.');
+  };
+
+  recognition.start();
+  return recognition; // So you can call recognition.stop() later
+}
+
+// Usage
+const recRef = useRef(null);
+const startStreaming = () => {
+  if (!isListening) {
+    recRef.current = startSpeechRecognition('bn-IN');
+    setIsListening(true);
+  } else {
+    recRef.current?.stop();
+    setIsListening(false);
+  }
+};
+
+// rec.stop(); // to stop
 
   let arr = [{ user: "Hello", model: "Yes how can i help you" }];
   const image = useRef();
@@ -140,8 +179,8 @@ const page = () => {
             />
 
             {/* Mic icon */}
-            <button className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
-              <Image src={"/mic.svg"} alt="mic" width={20} height={20}></Image>
+            <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
+              <Image src={isListening?`/mic-off.svg`:`mic.svg`} alt="mic" width={20} height={20}></Image>
             </button>
           </div>
 
