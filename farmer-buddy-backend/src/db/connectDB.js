@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { DB_NAME } from '../constants.js'
-
+//goerjgerj
 const connectDB=async()=>{
     try {
         const connectDB=await mongoose.connect(`${process.env.MONGO_URI}`,{
@@ -8,7 +8,7 @@ const connectDB=async()=>{
         })
         console.log("Database connected successfully");       
     } catch (err) {
-        console.log(`Error occured when connecting to the databast ${err}`);
+        console.log(`Error occured when connecting to the databast ${err.message}`);
         process.exit(1)
     }
 }
