@@ -69,15 +69,6 @@ const getHist = async (req, res) => {
 const updateUser = async(req, res) => {
   try{
     const { email } = req.user;
-    
-    // const { username, language, location } = req.body;
-
-    // const setFields = {
-    //   ...(userName !== undefined && { userName }),
-    //   ...(language !== undefined && { language }),
-    //   ...(location?.city !== undefined && { 'location.city': location.city }),
-    //   ...(location?.country !== undefined && { 'location.country': location.country })
-    // };
     const avatar=req.file?.path
     let avatarURL;
     if(avatar){
@@ -102,7 +93,8 @@ const updateUser = async(req, res) => {
           language: req.body?.language,
           location: {
             city: req.body?.location || "",
-            country: req.body?.country || ''
+            country: req.body?.country || '',
+            state:req.body?.state
           },
 
     cordinates: {
@@ -137,12 +129,12 @@ const weatherHandler = async(req, res) => {
 
 const soilDataHandler = async(req, res) => {
   try {
-    const { lat, lon, startDate, endDate } = req.body;
-    const soil = await Promise.all([
-      getSoilData(lat, lon, startDate, endDate)
-    ]);
+    const { lat, lon} = req.body;
+    
+    const soil = await getSoilData(lat, lon)
 
-    return res.json({success: true, soil});
+  
+    return res.status(200).json({status:200,data:soil});
   }catch(err){
     console.log('Soil Data Fetching failed', err.message);
     return res.status(500).json({error: err.message});
@@ -153,4 +145,4 @@ const soilDataHandler = async(req, res) => {
 
 
 
-export{newUser,getUser,getHist,updateUser}
+export{newUser,getUser,getHist,updateUser,soilDataHandler}

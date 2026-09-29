@@ -14,7 +14,7 @@ export default function Home() {
       </div>
       <div className="features flex justify-center gap-30">
         <div className="flex flex-col items-center p-3 h-[35vh] rounded-2xl bg-[#E8F5E9] shadow-xl/40 w-80">
-          <Image src={"/cloud-gif.gif"} width={60} height={40}></Image>
+          <Image loading="eager" src={"/cloud-gif.gif"} width={60} height={40}></Image>
           <p className="font-bold text-xl text-center mb-3">Weather Analysis & Report Generation</p>
           <p className="text-center">Gives weather prediction via user device location.</p>
         </div>

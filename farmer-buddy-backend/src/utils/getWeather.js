@@ -19,18 +19,18 @@ const getWeather = async (latitude, longitude) => {
 
 //---------Soil Data Collector--------//
 
-const getSoilData = async(latitude, longitude, startDate, endDate) => {
+const getSoilData = async(latitude, longitude) => {
     try{
-        const soilRes = await fetch('https://power.larc.nasa.gov/api/temporal/daily/point?parameters=GWETTOP,GWETROOT&community=AG&latitude=${latitude}&longitude=${longitude}&start=${startDate}&end=${endDate}&format=JSON');
-        const soilData = soilRes.json;
+        const soilRes = await fetch(`https://rest.isric.org/soilgrids/v2.0/properties/query?lon=${longitude}&lat=${latitude}&property=phh2o&property=nitrogen&depth=0-5cm&value=mean`);
+        const soilData = soilRes.json();
 
         if(soilData.error){
-            return res.status(400).json({error: soilData.error.message});
+            return null;
         }
 
         return soilData;
     }catch(err){
-        console.err('Problem Occurd while Soil Data fetching', err.message);
+        console.error('Problem Occurd while Soil Data fetching', err.message);
     }
 }
 

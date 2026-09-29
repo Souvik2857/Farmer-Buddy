@@ -6,7 +6,27 @@ import { getUserLanguage } from "@/utils/languageDetection";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
+  const [language, setlanguage] = useState()
   const [isListening, setIsListening] = useState(false)
+  if(session){
+    useEffect(() => {
+      const getUserData=async()=>{
+        const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
+          credentials:"include"
+        })
+        const data=await res.json()
+        const languageCode=getUserLanguage(data.state)
+        startSpeechRecognition(languageCode.bcp47)
+      }
+      getUserData()
+      
+    }, [])
+  }
+  if(!session){
+    console.log("Not signed in");
+    
+  }
+  
   function startSpeechRecognition(bcp47Code) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -17,7 +37,7 @@ const page = () => {
 
   const recognition = new SpeechRecognition();
 
-  recognition.lang = bcp47Code;       // e.g. 'bn-IN', 'ta-IN', 'te-IN'
+  recognition.lang = bcp47Code;     
   recognition.continuous = true;
   recognition.interimResults = true;
 
@@ -29,9 +49,9 @@ const page = () => {
       const transcript = event.results[i][0].transcript;
 
       if (event.results[i].isFinal) {
-        finalText += transcript;  // Confirmed words
+        finalText += transcript;  
       } else {
-        interimText += transcript; // Live/partial words
+        interimText += transcript; 
       }
     }
 
@@ -48,10 +68,9 @@ const page = () => {
   };
 
   recognition.start();
-  return recognition; // So you can call recognition.stop() later
+  return recognition; 
 }
 
-// Usage
 const recRef = useRef(null);
 const startStreaming = () => {
   if (!isListening) {
@@ -63,7 +82,6 @@ const startStreaming = () => {
   }
 };
 
-// rec.stop(); // to stop
 
   let arr = [{ user: "Hello", model: "Yes how can i help you" }];
   const image = useRef();
@@ -131,7 +149,7 @@ const startStreaming = () => {
         </div>
 
         <div className="flex items-center gap-2 w-[70vw] right-20 px-4 py-3 absolute bottom-1">
-          {/* Main input pill */}
+
           <div className="flex items-center gap-2 flex-1 bg-white rounded-full px-4 py-2.5 border border-gray-200 shadow-sm">
             {/* Left icon 1 - boxed */}
             <button
@@ -153,8 +171,6 @@ const startStreaming = () => {
                 className="hidden"
               />
             </button>
-
-            {/* Left icon 2 - clip */}
             <button
               onClick={() => {
                 imageTrigger(file);
@@ -170,7 +186,6 @@ const startStreaming = () => {
               <input type="file" ref={file} className="hidden" />
             </button>
 
-            {/* Actual textarea */}
             <textarea
               rows={1}
               placeholder="Type Your Question Here..."
@@ -178,13 +193,11 @@ const startStreaming = () => {
                      placeholder-gray-400 resize-none overflow-hidden leading-6"
             />
 
-            {/* Mic icon */}
             <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
               <Image src={isListening?`/mic-off.svg`:`mic.svg`} alt="mic" width={20} height={20}></Image>
             </button>
           </div>
 
-          {/* Send button */}
           <button
             className="w-13 h-13 rounded-full bg-white border border-gray-200 
                          shadow-sm flex items-center justify-center flex-shrink-0 

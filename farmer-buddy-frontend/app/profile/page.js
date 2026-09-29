@@ -40,11 +40,14 @@ const page = () => {
       latitude=data.latitude
       longitude=data.longitude
       language=getUserLanguage(state)
+
+      
       setUserData({"location":dataCity,
                 "language":language.language,
                 "latitude":latitude,
                 "longitude":longitude,
-                "country":country
+                "country":country,
+                "state":state
       })
     }
     getIpApi()
@@ -52,8 +55,10 @@ const page = () => {
   }, [])
   useEffect(() => {
     
+    
 
   }, [formData])
+
 
   const fileTrigger = () => {
     avatar.current.click();
@@ -79,6 +84,7 @@ const page = () => {
   form.append("language", userData.language)
   form.append("latitude", userData.latitude)
   form.append("longitude", userData.longitude)
+  form.append("state", userData.state)
 
 
   const res=await fetch("http://localhost:5000/api/v1/user/updateUser",
@@ -147,11 +153,11 @@ const page = () => {
           <div>
 
           <p>Language</p>
-          <input type="text" value={formData.language?formData.language:userData.language} className="border w-80" />
+          <input type="text" value={setForm.language?setForm.language:userData.language} className="border w-80" />
           </div>
           <div>
           <p>Location</p>
-          <input type="text" value={formData.location?.city?formData.location?.city:userData.location} className="border w-80 " />
+          <input type="text" value={setForm.location?.city?setForm.location.city:userData.location} className="border w-80 " />
           </div>
           <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 pl-6 pr-6 rounded-xl mt-2 text-white cursor-pointer">Save</button>
         </div>
