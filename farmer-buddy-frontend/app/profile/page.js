@@ -24,7 +24,7 @@ const page = () => {
     })
     const data=await res.json()
     setForm(data.userData) 
-    setSelectedFile(data.userData.avatar)
+    setSelectedFile(data.userData?.avatar)
   }
   let dataCity
   let latitude
@@ -113,7 +113,7 @@ const page = () => {
           }}
         >
           <Image
-            src={formData.avatar?.length>0?`${formData.avatar}`.replace('http://', 'https://'):preview}
+            src={formData?.avatar?.length>0?`${formData?.avatar}`.replace('http://', 'https://'):preview}
             alt="profile"
             fill
             className="object-cover"
@@ -132,7 +132,7 @@ const page = () => {
           <input
             type="text"
             className="border w-80"
-            value={formData.username}
+            value={formData?.username}
             onChange={handleChange}
             name="username"
             placeholder="Enter your name"
@@ -145,7 +145,7 @@ const page = () => {
             type="text"
             readOnly
             className="border w-80"
-            value={formData.email}
+            value={formData?.email}
             name="email"
             placeholder="Place Email"
             />
