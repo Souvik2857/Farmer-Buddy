@@ -8,6 +8,7 @@ const page = () => {
   const { data: session } = useSession();
   const [language, setlanguage] = useState()
   const [isListening, setIsListening] = useState(false)
+  const text=useRef()
   if(session){
     useEffect(() => {
       const getUserData=async()=>{
@@ -43,20 +44,21 @@ const page = () => {
 
   recognition.onresult = (event) => {
     let interimText = '';
-    let finalText = '';
+    text.current.value = '';
 
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const transcript = event.results[i][0].transcript;
 
       if (event.results[i].isFinal) {
-        finalText += transcript;  
+        text.current.value += transcript;  
       } else {
-        interimText += transcript; 
+        text.current.value += transcript;  
+         
       }
     }
 
     console.log('LIVE (interim):', interimText);
-    console.log('FINAL:', finalText);
+    console.log('FINAL:', text.current.value);
   };
 
   recognition.onerror = (event) => {
@@ -186,7 +188,7 @@ const startStreaming = () => {
               <input type="file" ref={file} className="hidden" />
             </button>
 
-            <textarea
+            <textarea ref={text}
               rows={1}
               placeholder="Type Your Question Here..."
               className="flex-1 bg-transparent outline-none text-sm text-gray-700 
