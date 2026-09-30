@@ -1,5 +1,6 @@
 //import jwt from "jsonwebtoken";
 import { adminInfo } from "../models/adminInfo.js";
+import { userinfo } from "../models/userInfo.js";
 
 const signup = async(req, res) => {
     try {
@@ -36,4 +37,19 @@ const login = async(req, res) => {
     }
 };
 
-export { signup, login };
+const getUserByAdminLoct = async(req, res) => {
+    try{
+        const { email } = req.body;
+        const admin = await adminInfo.findOne({ email });
+        
+        if(!admin){
+            return res.status(404).json({error: 'Not Admin/ Admin not found'});
+        }
+        const users = await userinfo.find({'location.city': admin.location.city});
+        res.status(200).json({city: admin.location.city, users});
+    }catch(err){
+        res.status(500).json({error: err.message});
+    }
+};
+
+export { signup, login, getUserByAdminLoct };
