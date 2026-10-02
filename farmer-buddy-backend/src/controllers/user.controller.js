@@ -140,9 +140,13 @@ const soilDataHandler = async(req, res) => {
     return res.status(500).json({error: err.message});
   }
 };
+const getAiAnalyze=async(req,res)=>{
+      const fileUrl=req.file?.path
+      const fileUpload=await uploadonCloudinary(fileUrl)
+      
+}
 
 
 
 
-
-export{newUser,getUser,getHist,updateUser,soilDataHandler}
+export{newUser,getUser,getHist,updateUser,soilDataHandler,getAiAnalyze}

@@ -3,11 +3,16 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
 import { getUserLanguage } from "@/utils/languageDetection";
+import { getLocation } from "@/utils/getUserLocation";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
   const [language, setlanguage] = useState(null)
   const [isListening, setIsListening] = useState(false)
+  const [userInfo, setUserInfo] = useState({})
+  const [userFile, setuserFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [arr, setarr] = useState([])
   const text=useRef()
   useEffect(() => {
   if(session){
@@ -22,21 +27,44 @@ const page = () => {
       getUserData()
       
     }
-    const getUserLiveLanguage=async()=>{
-      const res=await fetch("https://ipapi.co/json/")
-      const data=await res.json()
-      const state=data.region
-      const getUserCurrentLanguage=getUserLanguage(state)
-      setlanguage(getUserCurrentLanguage.bcp47)
-  }
+    const userLocation=async()=>{
+      const location=await getLocation()
+      console.log(location.latitude,location.longitude);
+    }
+
 
   if(!session){
-    getUserLiveLanguage()
+    userLocation()
     
   }
 }, [])
 
+  const userFileHandleChange=(e)=>{
+      const file=e.target.files[0]
 
+      
+      if(file){
+        setuserFile(file)
+        setImagePreview(URL.createObjectURL(file))
+      }
+
+  }
+  const handlechange=(e)=>{
+    setUserInfo({...userInfo,[e.target.name]:e.target.value})
+  }
+  const sendData=async()=>{
+    const formData=new FormData()
+    formData.append("text", userInfo)
+    formData.append("files", userFile)
+    const res=await fetch("http://localhost:5000/api/v1/user/analyze")
+    setarr([...arr,{user:{...userInfo,imagePreview},model:"how can i help"}])
+    setImagePreview(null)
+    setuserFile(null)
+  }
+  useEffect(() => {
+    console.log(arr);
+    
+  }, [arr])
   
   function startSpeechRecognition(bcp47Code) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -93,7 +121,7 @@ const startStreaming = () => {
 };
 
 
-  let arr = [{ user: "Hello", model: "Yes how can i help you" }];
+  
   const image = useRef();
   const file = useRef();
   const imageTrigger = (params) => {
@@ -139,10 +167,17 @@ const startStreaming = () => {
           <div className="w-[70vw] h-[75vh] overflow-y-auto flex flex-col gap-3 p-3">
             {arr.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
-                {msg.user && (
+                {msg.user.imagePreview && (
+                  <div className="flex justify-end">
+                    <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
+                      <img src={`${msg.user.imagePreview}`} height={120} width={120} alt="" />
+                    </div>
+                  </div>
+                )}
+                {msg.user.text && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
-                      {msg.user}
+                      {msg.user.text}
                     </div>
                   </div>
                 )}
@@ -175,6 +210,8 @@ const startStreaming = () => {
               ></Image>
               <input
                 type="file"
+                name="image"
+                onChange={userFileHandleChange}
                 capture="environment"
                 ref={image}
                 className="hidden"
@@ -192,11 +229,13 @@ const startStreaming = () => {
                 width={20}
                 height={20}
               ></Image>
-              <input type="file" ref={file} className="hidden" />
+              <input name="file" onChange={userFileHandleChange} type="file" ref={file} className="hidden" />
             </button>
 
             <textarea ref={text}
               rows={1}
+              name="text"
+              onChange={handlechange}
               placeholder="Type Your Question Here..."
               className="flex-1  bg-transparent outline-none text-sm text-gray-700 
                      placeholder-gray-400 resize-none overflow-y-auto leading-6 "
@@ -207,7 +246,7 @@ const startStreaming = () => {
             </button>
           </div>
 
-          <button
+          <button onClick={()=>{sendData()}}
             className="w-13 h-13 rounded-full bg-white border border-gray-200 
                          shadow-sm flex items-center justify-center flex-shrink-0 
                          hover:bg-gray-50 cursor-pointer"
