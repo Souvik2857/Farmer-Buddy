@@ -6,27 +6,37 @@ import { getUserLanguage } from "@/utils/languageDetection";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
-  const [language, setlanguage] = useState()
+  const [language, setlanguage] = useState(null)
   const [isListening, setIsListening] = useState(false)
   const text=useRef()
+  useEffect(() => {
   if(session){
-    useEffect(() => {
       const getUserData=async()=>{
         const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
           credentials:"include"
         })
         const data=await res.json()
-        const languageCode=getUserLanguage(data.state)
-        startSpeechRecognition(languageCode.bcp47)
+        const languageCode=getUserLanguage(data.location.state)
+        setlanguage(languageCode.bcp47)
       }
       getUserData()
       
-    }, [])
+    }
+    const getUserLiveLanguage=async()=>{
+      const res=await fetch("https://ipapi.co/json/")
+      const data=await res.json()
+      const state=data.region
+      const getUserCurrentLanguage=getUserLanguage(state)
+      setlanguage(getUserCurrentLanguage.bcp47)
   }
+
   if(!session){
-    console.log("Not signed in");
+    getUserLiveLanguage()
     
   }
+}, [])
+
+
   
   function startSpeechRecognition(bcp47Code) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -38,14 +48,14 @@ const page = () => {
 
   const recognition = new SpeechRecognition();
 
-  recognition.lang = bcp47Code;     
+  recognition.lang = bcp47Code || "bn-IN"; 
+  console.log(recognition.lang);
+      
   recognition.continuous = true;
   recognition.interimResults = true;
-
   recognition.onresult = (event) => {
     let interimText = '';
     text.current.value = '';
-
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const transcript = event.results[i][0].transcript;
 
@@ -56,9 +66,6 @@ const page = () => {
          
       }
     }
-
-    console.log('LIVE (interim):', interimText);
-    console.log('FINAL:', text.current.value);
   };
 
   recognition.onerror = (event) => {
@@ -76,7 +83,8 @@ const page = () => {
 const recRef = useRef(null);
 const startStreaming = () => {
   if (!isListening) {
-    recRef.current = startSpeechRecognition('bn-IN');
+    
+    recRef.current = startSpeechRecognition(language);
     setIsListening(true);
   } else {
     recRef.current?.stop();
@@ -150,10 +158,9 @@ const startStreaming = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-[70vw] right-20 px-4 py-3 absolute bottom-1">
+        <div className="flex items-center gap-2 w-[70vw] right-20 px-4 py-3 absolute bottom-1 ">
 
           <div className="flex items-center gap-2 flex-1 bg-white rounded-full px-4 py-2.5 border border-gray-200 shadow-sm">
-            {/* Left icon 1 - boxed */}
             <button
               onClick={() => {
                 imageTrigger(image);
@@ -191,8 +198,8 @@ const startStreaming = () => {
             <textarea ref={text}
               rows={1}
               placeholder="Type Your Question Here..."
-              className="flex-1 bg-transparent outline-none text-sm text-gray-700 
-                     placeholder-gray-400 resize-none overflow-hidden leading-6"
+              className="flex-1  bg-transparent outline-none text-sm text-gray-700 
+                     placeholder-gray-400 resize-none overflow-y-auto leading-6 "
             />
 
             <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
