@@ -9,6 +9,6 @@ const router = Router();
 router.route('/getUser').get(auth,getUser)
 router.route('/updateUser').put(auth,upload.single("avatar"),updateUser)
 router.route('/getSoilData').post(soilDataHandler)
-router.route('/analyze').post(upload.single("files"),getAiAnalyze)
+router.route('/analyze').post(auth,upload.single("files"),getAiAnalyze)
 
 export default router;

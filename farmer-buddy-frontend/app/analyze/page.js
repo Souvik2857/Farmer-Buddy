@@ -54,12 +54,19 @@ const page = () => {
   }
   const sendData=async()=>{
     const formData=new FormData()
-    formData.append("text", userInfo)
+    formData.append("text", JSON.stringify(userInfo))
     formData.append("files", userFile)
-    const res=await fetch("http://localhost:5000/api/v1/user/analyze")
-    setarr([...arr,{user:{...userInfo,imagePreview},model:"how can i help"}])
+    const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
+      method:'POST',
+      credentials:"include",
+      body:formData
+    })
+    const data=await res.json()
+    
+    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data}`}])
     setImagePreview(null)
     setuserFile(null)
+    text.current.value=""
   }
   useEffect(() => {
     console.log(arr);
