@@ -185,7 +185,7 @@ try {
       isApproved:approved
     });
   
-    return res.status(200).json({geminiReply:geminiReply,isApproved:approved});
+    return res.status(200).json({user:prompt,image:fileUpload || "",geminiReply:geminiReply,isApproved:approved});
 } catch (error) {
   return res.status(500).json({status:500,message:`internal server error ${error}`})
 }
