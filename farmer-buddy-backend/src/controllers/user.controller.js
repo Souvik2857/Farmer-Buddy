@@ -151,20 +151,24 @@ const getAiAnalyze = async (req, res) => {
   const userData = req.user;
   const prompt = data.text;
   const fileUpload = await uploadonCloudinary(fileUrl);
-  const resData = await getAiResponse(prompt, fileUpload);
-  const summary=JSON.parse(resData.split('json')[1].replace("```",""))
-  console.log(summary.summary);
+  const preHist=await userConvo.findOne({userEmail:userData.email}).sort({createdAt:-1})
+  const resData = await getAiResponse(preHist?.summary,prompt, fileUpload);
+  const parsedResData=JSON.parse(resData)
+  const geminiReply=parsedResData.reply
+  const summary=parsedResData.reply
+
+  
   
   const userHistory = await userConvo.create({
     userEmail: userData.email,
     conversation: {
       user: prompt,
-      gemini: resData,
+      gemini: geminiReply,
     },
-    summary: JSON.stringify(summary.summary),
+    summary: summary,
   });
 
-  return res.status(200).json({...userHistory.conversation.gemini.split('```')[0]});
+  return res.status(200).json({geminiReply:geminiReply});
 };
 
 export { newUser, getUser, getHist, updateUser, soilDataHandler, getAiAnalyze };

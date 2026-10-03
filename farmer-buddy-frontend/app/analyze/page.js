@@ -63,7 +63,7 @@ const page = () => {
     })
     const data=await res.json()
     
-    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data}`}])
+    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data.geminiReply}`}])
     setImagePreview(null)
     setuserFile(null)
     text.current.value=""
