@@ -7,6 +7,7 @@ const userHistory = new mongoose.Schema({
         user: {type: String, default: ''},
         gemini: {type: String, default: ''}
     },
+    picture:{type:String,default:''},
     summary: {type: String, default: ''},
     confidence:{type:String,default:''},
     isApproved:{type:String},

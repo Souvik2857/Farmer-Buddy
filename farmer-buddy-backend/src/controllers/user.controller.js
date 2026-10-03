@@ -179,6 +179,7 @@ try {
         user: prompt,
         gemini: geminiReply,
       },
+      picture:fileUpload || "",
       summary: summary,
       confidence:confidence,
       isApproved:approved
