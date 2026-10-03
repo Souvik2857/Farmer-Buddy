@@ -63,7 +63,7 @@ const page = () => {
     })
     const data=await res.json()
     
-    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data.geminiReply}`}])
+    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data.geminiReply}`,isApproved:data.isApproved}])
     setImagePreview(null)
     setuserFile(null)
     text.current.value=""
@@ -177,24 +177,39 @@ const startStreaming = () => {
                 {msg.user.imagePreview && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
-                      <img src={`${msg.user.imagePreview}`} height={120} width={120} alt="" />
+                      <img src={`${msg.user.imagePreview}`} height={150} width={150} alt="" />
                     </div>
                   </div>
                 )}
                 {msg.user.text && (
                   <div className="flex justify-end">
-                    <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
+                    <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
                       {msg.user.text}
+                    </div>
+                  </div>
+                )}
+                {msg.isApproved && (
+                  <div className="flex justify-end">
+                    <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
+                      {msg.isApproved === 'Moderate' || msg.isApproved==='Low'?
+                      (
+                         <span className="text-yellow-500">Warning: Moderate or Low approval</span>
+                      ):(
+                        <span className="text-green-500">All good!</span>
+                      )
+
+                      }
                     </div>
                   </div>
                 )}
                 {msg.model && (
                   <div className="flex justify-start">
-                    <div className="text-xs max-w-[70%] px-3 py-2 rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
+                    <div className=" max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
                       {msg.model}
                     </div>
                   </div>
                 )}
+
               </div>
             ))}
           </div>

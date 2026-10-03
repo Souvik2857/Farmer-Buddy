@@ -146,29 +146,48 @@ const soilDataHandler = async (req, res) => {
   }
 };
 const getAiAnalyze = async (req, res) => {
-  const fileUrl = req.file?.path;
-  const data = req.body;
-  const userData = req.user;
-  const prompt = data.text;
-  const fileUpload = await uploadonCloudinary(fileUrl);
-  const preHist=await userConvo.findOne({userEmail:userData.email}).sort({createdAt:-1})
-  const resData = await getAiResponse(preHist?.summary,prompt, fileUpload);
-  const parsedResData=JSON.parse(resData)
-  const geminiReply=parsedResData.reply
-  const summary=parsedResData.reply
-
+try {
+    const fileUrl = req.file?.path;
+    const data = req.body;
+    const userData = req.user;
+    const prompt = data.text;
+    const fileUpload = await uploadonCloudinary(fileUrl);
+    const preHist=await userConvo.findOne({userEmail:userData.email}).sort({createdAt:-1})
+    const resData = await getAiResponse(preHist?.summary,prompt, fileUpload);
+    const parsedResData=JSON.parse(resData)
+    const geminiReply=parsedResData.reply
+    const summary=parsedResData.reply
+    const confidence=parsedResData.confidence
+    let approved=false
+    if (confidence==='green') {
+      approved="True"
+    }
+    else if(confidence==='yellow'){
+        approved="Moderate"
+    }
+    else if(confidence==='red'){
+        approved="Low"
+    }
+    else{
+      approved=null
+    }
+    //if the approved is below true then it will go to admin panel automatically we will add those feature later
+    
+    const userHistory = await userConvo.create({
+      userEmail: userData.email,
+      conversation: {
+        user: prompt,
+        gemini: geminiReply,
+      },
+      summary: summary,
+      confidence:confidence,
+      isApproved:approved
+    });
   
-  
-  const userHistory = await userConvo.create({
-    userEmail: userData.email,
-    conversation: {
-      user: prompt,
-      gemini: geminiReply,
-    },
-    summary: summary,
-  });
-
-  return res.status(200).json({geminiReply:geminiReply});
+    return res.status(200).json({geminiReply:geminiReply,isApproved:approved});
+} catch (error) {
+  return res.status(500).json({status:500,message:`internal server error ${error}`})
+}
 };
 
 export { newUser, getUser, getHist, updateUser, soilDataHandler, getAiAnalyze };
