@@ -10,17 +10,17 @@ export function getLocation() {
         resolve({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy, // in meters
+          accuracy: pos.coords.accuracy, 
         });
       },
       (err) => {
-        // 1 = permission denied, 2 = position unavailable, 3 = timeout
+        
         reject(err);
       },
       {
-        enableHighAccuracy: false, // faster, uses Wi-Fi/cell; set true for GPS
+        enableHighAccuracy: false,
         timeout: 10000,
-        maximumAge: 5 * 60 * 1000, // reuse a position up to 5 min old
+        maximumAge: 5 * 60 * 1000, 
       }
     );
   });

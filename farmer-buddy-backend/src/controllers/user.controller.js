@@ -55,16 +55,12 @@ const getUser = async (req, res) => {
 };
 
 const getHist = async (req, res) => {
-  try {
-    const userHist = new userConvo({
-      userID: req.body.userID,
-      conversation: {
-        user: req.body.userMessage,
-        gemini: req.body.geminiMessage,
-      },
-    });
-    await userHist.save();
-    res.json({ success: true, history: saved });
+  try{
+    const {email}=req.user
+    const userHist=await userConvo.find({userEmail:email}).select(
+      "-_id -userEmail -confidence"
+    )
+    return res.status(200).json({status:200,data:userHist})
   } catch (err) {
     console.error(`Loading Failed`, err.message);
     res.status(500).json({ success: false, error: err.message });
@@ -113,7 +109,7 @@ const updateUser = async (req, res) => {
       .status(201)
       .json({ status: 201, message: "user updated successfully" });
 
-    if (!updated) return res.status(404).json({ error: "User not found" });
+    
   } catch (err) {
     console.error("Updatation Failed", err.message);
     res.status(500).json({ error: err.message });
@@ -171,20 +167,22 @@ try {
     else{
       approved=null
     }
-    //if the approved is below true then it will go to admin panel automatically we will add those feature later
     
-    const userHistory = await userConvo.create({
-      userEmail: userData.email,
-      conversation: {
-        user: prompt,
-        gemini: geminiReply,
-      },
-      picture:fileUpload || "",
-      summary: summary,
-      confidence:confidence,
-      isApproved:approved
-    });
-  
+    //if the approved is below true then it will go to admin panel automatically we will add those feature later
+    if(approved){
+      const userHistory = await userConvo.create({
+        userEmail: userData.email,
+        conversation: {
+          user: prompt,
+          gemini: geminiReply,
+        },
+        picture:fileUpload.replace("http","https"),
+        summary: summary,
+        confidence:confidence,
+        isApproved:approved
+      });
+    }
+      
     return res.status(200).json({user:prompt,image:fileUpload || "",geminiReply:geminiReply,isApproved:approved});
 } catch (error) {
   return res.status(500).json({status:500,message:`internal server error ${error}`})

@@ -7,38 +7,65 @@ import { getLocation } from "@/utils/getUserLocation";
 import Image from "next/image";
 const page = () => {
   const { data: session } = useSession();
-  const [language, setlanguage] = useState(null)
+  const [language, setlanguage] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [userInfo, setUserInfo] = useState({})
   const [userFile, setuserFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [arr, setarr] = useState([])
   const text=useRef()
-  useEffect(() => {
-  if(session){
-      const getUserData=async()=>{
-        const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
-          credentials:"include"
-        })
-        const data=await res.json()
-        const languageCode=getUserLanguage(data.location.state)
-        setlanguage(languageCode.bcp47)
-      }
-      getUserData()
-      
-    }
-    const userLocation=async()=>{
-      const location=await getLocation()
-      console.log(location.latitude,location.longitude);
-    }
-
-
-  if(!session){
-    userLocation()
-    
+ useEffect(() => {
+  if (session === undefined) {
+    return;
   }
-}, [])
 
+  const getUserData = async () => {
+    try {
+      const [res, res2] = await Promise.all([
+        fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" }),
+        fetch("http://localhost:5000/api/v1/user/getConversation", { credentials: "include" })
+      ]);
+
+      const [user, history] = await Promise.all([res.json(), res2.json()]);
+
+      const { userData } = user;
+      const { data } = history;
+      console.log(data);
+
+      const languageCode = getUserLanguage(userData.location.state);
+      setlanguage(languageCode.bcp47);
+      
+      // Use functional state updates to prevent stale state issues
+      setarr(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const userLocation = async () => {
+    try {
+      const location = await getLocation();
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${location.latitude}&longitude=${location.longitude}`
+      );
+      const data = await res.json();
+
+      // Fixed string interpolation syntax inside reverse-geocode URL above
+      const state = data.principalSubdivision;
+      const languageCode = getUserLanguage(state);
+
+      setlanguage(languageCode.bcp47);
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  };
+
+  if (session) {
+    getUserData();
+  } else {
+    userLocation();
+  }
+}, [session]);
   const userFileHandleChange=(e)=>{
       const file=e.target.files[0]
 
@@ -68,10 +95,8 @@ const page = () => {
     setuserFile(null)
     text.current.value=""
   }
-  useEffect(() => {
-    console.log(arr);
-    
-  }, [arr])
+console.log(arr);
+
   
   function startSpeechRecognition(bcp47Code) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -83,8 +108,8 @@ const page = () => {
 
   const recognition = new SpeechRecognition();
 
-  recognition.lang = bcp47Code || "bn-IN"; 
-  console.log(recognition.lang);
+  recognition.lang = bcp47Code || language; 
+
       
   recognition.continuous = true;
   recognition.interimResults = true;
@@ -174,14 +199,14 @@ const startStreaming = () => {
           <div className="w-[70vw] h-[75vh] overflow-y-auto flex flex-col gap-3 p-3">
             {arr.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
-                {msg.user.imagePreview && (
+                {msg.user?.imagePreview && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
                       <img src={`${msg.user.imagePreview}`} height={150} width={150} alt="" />
                     </div>
                   </div>
                 )}
-                {msg.user.text && (
+                {msg?.conversation?.user?.text && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
                       {msg.user.text}
