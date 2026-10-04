@@ -145,9 +145,13 @@ const getAiAnalyze = async (req, res) => {
 try {
     const fileUrl = req.file?.path;
     const data = req.body;
+    
     const userData = req.user;
-    const prompt = data.text;
-    const fileUpload = await uploadonCloudinary(fileUrl);
+    const prompt = JSON.parse(data.text).text;
+    let fileUpload=''
+    if(fileUrl)  {
+      fileUpload = await uploadonCloudinary(fileUrl);
+    }
     const preHist=await userConvo.findOne({userEmail:userData.email}).sort({createdAt:-1})
     const resData = await getAiResponse(preHist?.summary,prompt, fileUpload);
     const parsedResData=JSON.parse(resData)
@@ -176,14 +180,14 @@ try {
           user: prompt,
           gemini: geminiReply,
         },
-        picture:fileUpload.replace("http","https"),
+        picture:fileUpload.replace("http","https") || '',
         summary: summary,
         confidence:confidence,
         isApproved:approved
       });
+      return res.status(200).json({...userHistory._doc});
     }
       
-    return res.status(200).json({user:prompt,image:fileUpload || "",geminiReply:geminiReply,isApproved:approved});
 } catch (error) {
   return res.status(500).json({status:500,message:`internal server error ${error}`})
 }

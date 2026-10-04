@@ -6,7 +6,7 @@ import { getUserLanguage } from "@/utils/languageDetection";
 import { getLocation } from "@/utils/getUserLocation";
 import Image from "next/image";
 const page = () => {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
   const [language, setlanguage] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [userInfo, setUserInfo] = useState({})
@@ -30,12 +30,10 @@ const page = () => {
 
       const { userData } = user;
       const { data } = history;
-      console.log(data);
 
       const languageCode = getUserLanguage(userData.location.state);
       setlanguage(languageCode.bcp47);
       
-      // Use functional state updates to prevent stale state issues
       setarr(data);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -50,7 +48,6 @@ const page = () => {
       );
       const data = await res.json();
 
-      // Fixed string interpolation syntax inside reverse-geocode URL above
       const state = data.principalSubdivision;
       const languageCode = getUserLanguage(state);
 
@@ -66,6 +63,8 @@ const page = () => {
     userLocation();
   }
 }, [session]);
+
+
   const userFileHandleChange=(e)=>{
       const file=e.target.files[0]
 
@@ -88,14 +87,19 @@ const page = () => {
       credentials:"include",
       body:formData
     })
+    setImagePreview(null)
     const data=await res.json()
-    
-    setarr([...arr,{user:{...userInfo,imagePreview},model:`${data.geminiReply}`,isApproved:data.isApproved}])
+    const {conversation}=data
+    const user=conversation?.user
+    const gemini=conversation?.gemini
+    const {picture}=data
+ 
+    setarr([...arr,{conversation:{user:user,gemini:gemini},picture:picture,isApproved:data.isApproved}])
     setImagePreview(null)
     setuserFile(null)
     text.current.value=""
   }
-console.log(arr);
+
 
   
   function startSpeechRecognition(bcp47Code) {
@@ -199,17 +203,17 @@ const startStreaming = () => {
           <div className="w-[70vw] h-[75vh] overflow-y-auto flex flex-col gap-3 p-3">
             {arr.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
-                {msg.user?.imagePreview && (
+                {msg.picture && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
-                      <img src={`${msg.user.imagePreview}`} height={150} width={150} alt="" />
+                      <img src={`${msg.picture}`} height={150} width={150} alt="" />
                     </div>
                   </div>
                 )}
-                {msg?.conversation?.user?.text && (
+                {msg?.conversation?.user && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
-                      {msg.user.text}
+                      {msg.conversation.user}
                     </div>
                   </div>
                 )}
@@ -227,10 +231,10 @@ const startStreaming = () => {
                     </div>
                   </div>
                 )}
-                {msg.model && (
+                {msg.conversation?.gemini && (
                   <div className="flex justify-start">
                     <div className=" max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
-                      {msg.model}
+                      {msg.conversation.gemini}
                     </div>
                   </div>
                 )}
@@ -241,8 +245,12 @@ const startStreaming = () => {
         </div>
 
         <div className="flex items-center gap-2 w-[70vw] right-20 px-4 py-3 absolute bottom-1 ">
-
-          <div className="flex items-center gap-2 flex-1 bg-white rounded-full px-4 py-2.5 border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
+            {imagePreview &&
+          <div className="image-preview absolute bottom-14 h-30 left-0 bg-white w-full rounded-t-xl flex flex-col justify-center">
+            <Image className="rounded-xl ml-2" src={`https://res.cloudinary.com/deuhdw4fr/image/upload/v1791130952/nlagi6hjbxb4mvc76ofe.jpg`} width={140} height={140}></Image>
+          </div>
+}
             <button
               onClick={() => {
                 imageTrigger(image);

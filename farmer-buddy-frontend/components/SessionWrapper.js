@@ -3,7 +3,7 @@ import {SessionProvider} from 'next-auth/react'
 
 export default function App({children}) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false}>
       {children}
     </SessionProvider>
   )
