@@ -197,8 +197,6 @@ try {
     return res.status(200).json({...userConvoData});
       
 } catch (error) {
-
-  
   return res.status(500).json({status:500,message:`internal server error ${error}`})
 }
 };

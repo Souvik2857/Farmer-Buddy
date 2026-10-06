@@ -4,9 +4,11 @@ import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
 import { getUserLanguage } from "@/utils/languageDetection";
 import { getLocation } from "@/utils/getUserLocation";
+import GlowButton from "@/components/RingGlow";
 import Image from "next/image";
 const Page = () => {
   const { data: session,status } = useSession();
+  const [isLoading, setisLoading] = useState(false)
   const [language, setlanguage] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [userInfo, setUserInfo] = useState({})
@@ -78,15 +80,16 @@ const Page = () => {
     setUserInfo({...userInfo,[e.target.name]:e.target.value})
   }
   const sendData=async()=>{
-    const formData=new FormData()
-    formData.append("text", JSON.stringify(userInfo))
-    formData.append("files", userFile)
-    const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
-      method:'POST',
-      credentials:"include",
-      body:formData
-    })
-    setImagePreview(null)
+    setisLoading(true)
+   try {
+     const formData=new FormData()
+     formData.append("text", JSON.stringify(userInfo))
+     formData.append("files", userFile)
+     const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
+       method:'POST',
+       credentials:"include",
+       body:formData
+     })
     const data=await res.json()
     const {conversation}=data
     const user=conversation?.user
@@ -96,10 +99,22 @@ const Page = () => {
     setarr([...arr,{conversation:{user:user,gemini:gemini},picture:picture,isApproved:data.isApproved}])
     setImagePreview(null)
     setuserFile(null)
+    
     text.current.value=""
+   } catch (error) {
+    console.log("there is a error in submiting the data ",error);
+   }
+   finally{
+      setisLoading(false)
+   }
+    
   }
 
-
+  const removeSelectedPicture=()=>{
+    setImagePreview(null)
+    setuserFile(null)
+    setImagePreview(null)
+  }
   
   function startSpeechRecognition(bcp47Code) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -217,9 +232,14 @@ const startStreaming = () => {
 
         <div className="flex items-center gap-2 w-[70vw] px-4 py-3 ">
           <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
+            
             {imagePreview &&
           <div className="image-preview absolute bottom-14 left-0 bg-white w-full rounded-t-xl flex flex-col justify-center">
-            <Image className="rounded-xl ml-2" src={imagePreview} width={140} height={140}></Image>
+            <Image className="rounded-xl ml-2 relative" src={imagePreview} width={140} height={140}>
+            </Image>
+            <Image className="absolute top-2 right-3 cursor-pointer" onClick={()=>{
+              removeSelectedPicture()
+            }} src={'/cross.svg'} width={15} height={20} alt="cross"></Image>
           </div>
 }
             <button
@@ -271,14 +291,16 @@ const startStreaming = () => {
               <Image src={isListening?`/mic-off.svg`:`mic.svg`} alt="mic" width={20} height={20}></Image>
             </button>
           </div>
-
+           {!isLoading?(   
           <button onClick={()=>{sendData()}}
             className="w-13 h-13 rounded-full bg-white border border-gray-200 
                          shadow-sm flex items-center justify-center flex-shrink-0 
                          hover:bg-gray-50 cursor-pointer"
           >
             <Image src={"/send.svg"} alt="send" width={20} height={20}></Image>
-          </button>
+          </button>)
+            :(<GlowButton loading={isLoading}></GlowButton>)}
+          
         </div>
       </div>
     </>
