@@ -144,8 +144,7 @@ const soilDataHandler = async (req, res) => {
 const getAiAnalyze = async (req, res) => {
 try {
     const fileUrl = req.file?.path;
-    const data = req.body;
-    
+    const data = req.body; 
     const userData = req.user;
     const prompt = JSON.parse(data.text).text;
     let fileUpload=''
@@ -187,8 +186,19 @@ try {
       });
       return res.status(200).json({...userHistory._doc});
     }
+    const userConvoData={
+      conversation:{
+        user:prompt,
+        gemini:geminiReply
+      },
+      picture:fileUpload.replace("http","https") || '',
+      isApproved:approved
+    }
+    return res.status(200).json({...userConvoData});
       
 } catch (error) {
+
+  
   return res.status(500).json({status:500,message:`internal server error ${error}`})
 }
 };
