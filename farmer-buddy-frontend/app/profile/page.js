@@ -50,14 +50,12 @@ const page = () => {
                 "state":state
       })
     }
-    getIpApi()
     getUserData()
-  }, [])
-  useEffect(() => {
-    
-    
+    if(!session){
+      getIpApi()
+    }
+  }, [session])
 
-  }, [formData])
 
 
   const fileTrigger = () => {
@@ -104,10 +102,10 @@ const page = () => {
 
   return (
     <>
-      <div className="mt-20 ">
-        <p className="text-center">Avatar</p>
+      <div className="mt-20 px-4 pb-8 sm:px-6">
+        <p className="text-center mb-2">Avatar</p>
         <div
-          className="avatar border p-5 w-30 h-30 mx-auto flex justify-center items-center bg-amber-50 relative"
+          className="avatar border p-3 sm:p-5 w-28 h-28 sm:w-32 sm:h-32 mx-auto flex justify-center items-center bg-amber-50 relative"
           onClick={() => {
             fileTrigger();
           }}
@@ -125,41 +123,41 @@ const page = () => {
             className="hidden"
           />
         </div>
-        <div className="flex flex-col items-center">
-          <div>
+        <div className="flex flex-col items-center gap-3 w-full max-w-md mx-auto mt-5">
+          <div className="w-full">
 
-          <p>Name</p>
+          <p className="mb-1">Name</p>
           <input
             type="text"
-            className="border w-80"
+            className="border w-full px-3 py-2"
             value={formData?.username}
             onChange={handleChange}
             name="username"
             placeholder="Enter your name"
             />
           </div>
-          <div>
+          <div className="w-full">
 
-          <p>Email</p>
+          <p className="mb-1">Email</p>
           <input
             type="text"
             readOnly
-            className="border w-80"
+            className="border w-full px-3 py-2"
             value={formData?.email}
             name="email"
             placeholder="Place Email"
             />
           </div>
-          <div>
+          <div className="w-full">
 
-          <p>Language</p>
-          <input type="text" value={setForm.language?setForm.language:userData.language} className="border w-80" />
+          <p className="mb-1">Language</p>
+          <input type="text" value={formData.language?formData.language:userData.language} className="border w-full px-3 py-2" />
           </div>
-          <div>
-          <p>Location</p>
-          <input type="text" value={setForm.location?.city?setForm.location.city:userData.location} className="border w-80 " />
+          <div className="w-full">
+          <p className="mb-1">Location</p>
+          <input type="text" value={formData.location?.city?formData.location.city:userData.location} className="border w-full px-3 py-2" />
           </div>
-          <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 pl-6 pr-6 rounded-xl mt-2 text-white cursor-pointer">Save</button>
+          <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 px-6 rounded-xl mt-2 text-white cursor-pointer w-full sm:w-auto">Save</button>
         </div>
       </div>
     </>

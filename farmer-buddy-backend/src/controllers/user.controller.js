@@ -10,6 +10,7 @@ import { getWeather, getSoilData } from "../utils/getWeather.js";
 import languageDetect from "../utils/languageDetection.js";
 import { getAiResponse } from "../utils/aiAnalyze.js";
 
+
 const newUser = async (req, res) => {
   try {
     const picture = req.file?.path;
@@ -118,12 +119,12 @@ const updateUser = async (req, res) => {
 
 const weatherHandler = async (req, res) => {
   try {
-    const { lat, lon } = req.body;
-    const data = await getWeather(lat, lon);
-    if (!lat || !lon) {
+    const { latitude, longitude } = req.body;
+    const data = await getWeather(latitude, longitude);
+    if (!latitude || !longitude) {
       res.status(404).json({ error: "latitude, longitude required" });
     }
-    return res.status(200).json({ ...data });
+    return res.status(200).json({ data });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -131,9 +132,10 @@ const weatherHandler = async (req, res) => {
 
 const soilDataHandler = async (req, res) => {
   try {
-    const { lat, lon } = req.body;
+    
+    const { latitude, longitude } = req.body;
 
-    const soil = await getSoilData(lat, lon);
+    const soil = await getSoilData(latitude, longitude);
 
     return res.status(200).json({ status: 200, data: soil });
   } catch (err) {
@@ -143,16 +145,23 @@ const soilDataHandler = async (req, res) => {
 };
 const getAiAnalyze = async (req, res) => {
 try {
+    if (req.body.text==="{}") {
+      return res.status(404).json({status:404,message:"Enter message"})
+    }
+    const {weatherData}=req.body || ""
+    const {soilData}=req.body || ''
     const fileUrl = req.file?.path;
     const data = req.body; 
     const userData = req.user;
     const prompt = JSON.parse(data.text).text;
+    const soil=JSON.parse(soilData)
+    const weather=JSON.parse(weatherData)
     let fileUpload=''
     if(fileUrl)  {
       fileUpload = await uploadonCloudinary(fileUrl);
     }
     const preHist=await userConvo.findOne({userEmail:userData.email}).sort({createdAt:-1})
-    const resData = await getAiResponse(preHist?.summary,prompt, fileUpload);
+    const resData = await getAiResponse(preHist?.summary,prompt, fileUpload,weatherData,soilData);
     const parsedResData=JSON.parse(resData)
     const geminiReply=parsedResData.reply
     const summary=parsedResData.reply
@@ -180,6 +189,25 @@ try {
           gemini: geminiReply,
         },
         picture:fileUpload.replace("http","https") || '',
+         weather: {
+          pressure: weather.pressure,
+          dewPoint: weather.dewPoint,
+          humidity: weather.humidity,
+          windDirection: weather.windDirection,
+          windSpeed: weather.windSpeed,
+          temperature: weather.temperature,
+          location: weather.location,
+        },
+        soil: {
+          ph: soil.ph,
+          organicCarbon: soil.organicCarbon,
+          nitrogen: soil.nitrogen,
+          clay: soil.clay,
+          silt: soil.silt,
+          sand: soil.sand,
+          cec:soil.cec,
+          bulkDensity: soil.bulkDensity,
+        },
         summary: summary,
         confidence:confidence,
         isApproved:approved
@@ -201,4 +229,4 @@ try {
 }
 };
 
-export { newUser, getUser, getHist, updateUser, soilDataHandler, getAiAnalyze };
+export { newUser, getUser, getHist, updateUser, soilDataHandler, getAiAnalyze ,weatherHandler};

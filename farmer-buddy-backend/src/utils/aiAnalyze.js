@@ -5,7 +5,7 @@ const ai = new GoogleGenerativeAI(process.env.GEMINI_API);
 // 2. Use a valid model name (gemini-3.1 does not exist yet)
 const MODEL_NAME = "gemini-3.1-flash-lite"; 
 
-const getAiResponse = async (previousPrompt = "", prompt, imageUrl = "") => {
+const getAiResponse = async (previousPrompt = "", prompt, imageUrl = "",weatherData="",soilData="") => {
   const model = ai.getGenerativeModel({
     model: MODEL_NAME,
     systemInstruction: `You are a helpful farming assistant for Indian farmers.
@@ -18,7 +18,7 @@ If an image is provided, it represents the CURRENT image the user is asking abou
 - DO NOT use the 'previous conversation' to guess what the current image contains.
 - If the user asks "what is this plant" or "what is the disease", they are asking about the NEW image provided.
 
-First, look at the CURRENT question and the CURRENT image (if any) by themselves.
+First, look at the CURRENT question and the CURRENT image (if any),CURRENT weather condition the (tempareture is in celcius) (if any) and CURRENT soil condition (if any) and use those information to give output by themselves.
 If they are not about farming or agriculture, do not answer them. Reply only that you can help with farming, in the user's native Indian language.
 
 Each request contains a PREVIOUS_SUMMARY of the conversation so far (it may be empty).
@@ -35,7 +35,7 @@ Return ONLY valid JSON in this exact format:
 {"reply": "your answer as a plain text string in the user's native Indian language", "summary": "the updated summary", "confidence": "green" | "yellow" | "red"}`,
   });
 
-  const textPrompt = `PREVIOUS_SUMMARY: ${previousPrompt || "None"}\n\nCURRENT QUESTION: ${prompt}\n\nIMPORTANT: Analyze ONLY the new image attached to this message. Ignore any images from the previous summary.`;
+  const textPrompt = `PREVIOUS_SUMMARY: ${previousPrompt || "None"}\n\nCURRENT QUESTION: ${prompt}\n\ WEATHER DETAILS :${weatherData || "None"}\n\n SOIL DATA ${soilData || "None"} IMPORTANT: Analyze ONLY the new image attached to this message and the weather and soil details. Ignore any images and weather and soil details from the previous summary.`;
 
 
   const contents = [];

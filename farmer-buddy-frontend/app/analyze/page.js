@@ -11,6 +11,8 @@ const Page = () => {
   const [isLoading, setisLoading] = useState(false)
   const [language, setlanguage] = useState('')
   const [isListening, setIsListening] = useState(false)
+  const [fieldDetails, setfieldDetails] = useState({})
+  const [coOrdinates, setcoOrdinates] = useState({})
   const [userInfo, setUserInfo] = useState({})
   const [userFile, setuserFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
@@ -32,10 +34,12 @@ const Page = () => {
 
       const { userData } = user;
       const { data } = history;
-
+      setcoOrdinates({
+        latitude:Number(userData?.cordinates?.latitude),
+        longitude:Number(userData?.cordinates?.longitude)
+      })
       const languageCode = getUserLanguage(userData.location.state);
-      setlanguage(languageCode.bcp47);
-      
+      setlanguage(languageCode.bcp47);   
       setarr(data);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -54,6 +58,10 @@ const Page = () => {
       const languageCode = getUserLanguage(state);
 
       setlanguage(languageCode.bcp47);
+      setcoOrdinates({
+        latitude:location.latitude,
+        longitude:location.longitude
+      })
     } catch (error) {
       console.error("Error fetching location:", error);
     }
@@ -65,7 +73,46 @@ const Page = () => {
     userLocation();
   }
 }, [session]);
+  
+  
+  const getUserFieldDetails=async()=>{
+      setisLoading(true)
+      try {
+        const [res,res2]=await Promise.all([
+            fetch('http://localhost:5000/api/v1/user/getWeather',{
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json'
+              },
+              body:JSON.stringify({latitude:coOrdinates?.latitude,longitude:coOrdinates?.longitude})
+            }),
+            fetch('http://localhost:5000/api/v1/user/getSoilData',{
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json'
+              },
+              body:JSON.stringify({latitude:coOrdinates?.latitude,longitude:coOrdinates?.longitude})
+            })
+        ])
+        const [weatherData,soilData]=await Promise.all([res.json(),res2.json()])
+        setfieldDetails({
+          weather:{
+            ...weatherData.data
+          },
+          soilData:{
+            ...soilData.data
+          }
+        })
+      } catch (error) {
+        console.log(error);
+      }
+      finally{
+        setisLoading(false)
+      }
+      
+  }
 
+  
   const userFileHandleChange=(e)=>{
       const file=e.target.files[0]
       URL.revokeObjectURL(imagePreview)
@@ -85,6 +132,8 @@ const Page = () => {
      const formData=new FormData()
      formData.append("text", JSON.stringify(userInfo))
      formData.append("files", userFile)
+     formData.append("weatherData", JSON.stringify(fieldDetails.weather))
+     formData.append("soilData", JSON.stringify(fieldDetails.soilData))
      const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
        method:'POST',
        credentials:"include",
@@ -95,11 +144,13 @@ const Page = () => {
     const user=conversation?.user
     const gemini=conversation?.gemini
     const {picture}=data
- 
+     
     setarr([...arr,{conversation:{user:user,gemini:gemini},picture:picture,isApproved:data.isApproved}])
     setImagePreview(null)
     setuserFile(null)
-    
+    const utterance = new SpeechSynthesisUtterance(gemini);
+    utterance.lang = "bn-IN";   
+    speechSynthesis.speak(utterance);
     text.current.value=""
    } catch (error) {
     console.log("there is a error in submiting the data ",error);
@@ -180,8 +231,8 @@ const startStreaming = () => {
   
   return (
     <>
-      <div className="flex gap-3 justify-center items-center flex-col">      
-        <div className="analyze-ai flex flex-col items-center w-[78vw] h-[75vh]">
+      <div className="flex justify-center items-center flex-col">      
+        <div className="analyze-ai flex flex-col items-center w-[78vw] h-[72vh]">
           <p className="text-xl text-center mt-6 mb-4">
             Ask me anything about crops, pests, weather, soil or farming
           </p>
@@ -231,6 +282,9 @@ const startStreaming = () => {
         </div>
 
         <div className="flex items-center gap-2 w-[70vw] px-4 py-3 ">
+          <button className="border-none px-2 p-4 bg-green-400 rounded-xl cursor-pointer" onClick={()=>{
+            getUserFieldDetails()
+          }}>Field Details</button>
           <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
             
             {imagePreview &&
@@ -278,6 +332,7 @@ const startStreaming = () => {
               <input name="file" onChange={userFileHandleChange} type="file" ref={file} className="hidden" />
             </button>
 
+            
             <textarea ref={text}
               rows={1}
               name="text"
@@ -286,7 +341,6 @@ const startStreaming = () => {
               className="flex-1  bg-transparent outline-none text-sm text-gray-700 
                      placeholder-gray-400 resize-none overflow-y-auto leading-6 "
             />
-
             <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
               <Image src={isListening?`/mic-off.svg`:`mic.svg`} alt="mic" width={20} height={20}></Image>
             </button>
