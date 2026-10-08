@@ -3,168 +3,24 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
 import { getUserLanguage } from "@/utils/languageDetection";
-import { getLocation } from "@/utils/getUserLocation";
-import GlowButton from "@/components/RingGlow";
 import Image from "next/image";
+
 const Page = () => {
-  const { data: session,status } = useSession();
-  const [isLoading, setisLoading] = useState(false)
-  const [language, setlanguage] = useState('')
+  const { data: session } = useSession();
+  const [language, setlanguage] = useState()
   const [isListening, setIsListening] = useState(false)
-  const [fieldDetails, setfieldDetails] = useState({})
-  const [coOrdinates, setcoOrdinates] = useState({})
-  const [userInfo, setUserInfo] = useState({})
-  const [userFile, setuserFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState(null)
-  const [arr, setarr] = useState([])
   const text=useRef()
- useEffect(() => {
-  if (session === undefined) {
-    return;
-  }
-
-  const getUserData = async () => {
-    try {
-      const [res, res2] = await Promise.all([
-        fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" }),
-        fetch("http://localhost:5000/api/v1/user/getConversation", { credentials: "include" })
-      ]);
-
-      const [user, history] = await Promise.all([res.json(), res2.json()]);
-
-      const { userData } = user;
-      const { data } = history;
-      setcoOrdinates({
-        latitude:Number(userData?.cordinates?.latitude),
-        longitude:Number(userData?.cordinates?.longitude)
-      })
-      const languageCode = getUserLanguage(userData.location.state);
-      setlanguage(languageCode.bcp47);   
-      setarr(data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
-
-  const userLocation = async () => {
-    try {
-      const location = await getLocation();
-      const res = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${location.latitude}&longitude=${location.longitude}`
-      );
-      const data = await res.json();
-
-      const state = data.principalSubdivision;
-      const languageCode = getUserLanguage(state);
-
-      setlanguage(languageCode.bcp47);
-      setcoOrdinates({
-        latitude:location.latitude,
-        longitude:location.longitude
-      })
-    } catch (error) {
-      console.error("Error fetching location:", error);
-    }
-  };
-
-  if (session) {
-    getUserData();
-  } else {
-    userLocation();
-  }
-}, [session]);
-  
-  
-  const getUserFieldDetails=async()=>{
-      setisLoading(true)
-      try {
-        const [res,res2]=await Promise.all([
-            fetch('http://localhost:5000/api/v1/user/getWeather',{
-              method:'POST',
-              headers:{
-                'Content-Type':'application/json'
-              },
-              body:JSON.stringify({latitude:coOrdinates?.latitude,longitude:coOrdinates?.longitude})
-            }),
-            fetch('http://localhost:5000/api/v1/user/getSoilData',{
-              method:'POST',
-              headers:{
-                'Content-Type':'application/json'
-              },
-              body:JSON.stringify({latitude:coOrdinates?.latitude,longitude:coOrdinates?.longitude})
-            })
-        ])
-        const [weatherData,soilData]=await Promise.all([res.json(),res2.json()])
-        setfieldDetails({
-          weather:{
-            ...weatherData.data
-          },
-          soilData:{
-            ...soilData.data
-          }
-        })
-      } catch (error) {
-        console.log(error);
-      }
-      finally{
-        setisLoading(false)
-      }
-      
-  }
-
-  
-  const userFileHandleChange=(e)=>{
-      const file=e.target.files[0]
-      URL.revokeObjectURL(imagePreview)
-      
-      if(file){
-        setuserFile(file)
-        setImagePreview(URL.createObjectURL(file))
-      }
-
-  }
-  const handlechange=(e)=>{
-    setUserInfo({...userInfo,[e.target.name]:e.target.value})
-  }
-  const sendData=async()=>{
-    setisLoading(true)
-   try {
-     const formData=new FormData()
-     formData.append("text", JSON.stringify(userInfo))
-     formData.append("files", userFile)
-     formData.append("weatherData", JSON.stringify(fieldDetails.weather))
-     formData.append("soilData", JSON.stringify(fieldDetails.soilData))
-     const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
-       method:'POST',
-       credentials:"include",
-       body:formData
-     })
-    const data=await res.json()
-    const {conversation}=data
-    const user=conversation?.user
-    const gemini=conversation?.gemini
-    const {picture}=data
-     
-    setarr([...arr,{conversation:{user:user,gemini:gemini},picture:picture,isApproved:data.isApproved}])
-    setImagePreview(null)
-    setuserFile(null)
-    const utterance = new SpeechSynthesisUtterance(gemini);
-    utterance.lang = "bn-IN";   
-    speechSynthesis.speak(utterance);
-    text.current.value=""
-   } catch (error) {
-    console.log("there is a error in submiting the data ",error);
-   }
-   finally{
-      setisLoading(false)
-   }
+  useEffect(() => {
+    if (!session) return;
+      (async () => {
+          const res = await fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" });
+          const data = await res.json();
+          langRef.current = getUserLanguage(data.userData?.location?.state)?.bcp47 || "en-IN";
+      })();
+  }, [session]);
+  if(!session){
+    console.log("Not signed in");
     
-  }
-
-  const removeSelectedPicture=()=>{
-    setImagePreview(null)
-    setuserFile(null)
-    setImagePreview(null)
   }
   
   function startSpeechRecognition(bcp47Code) {
@@ -177,14 +33,14 @@ const Page = () => {
 
   const recognition = new SpeechRecognition();
 
-  recognition.lang = bcp47Code || language; 
-
-      
+  recognition.lang = bcp47Code;     
   recognition.continuous = true;
   recognition.interimResults = true;
+
   recognition.onresult = (event) => {
     let interimText = '';
     text.current.value = '';
+
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const transcript = event.results[i][0].transcript;
 
@@ -195,6 +51,9 @@ const Page = () => {
          
       }
     }
+
+    console.log('LIVE (interim):', interimText);
+    console.log('FINAL:', text.current.value);
   };
 
   recognition.onerror = (event) => {
@@ -212,8 +71,7 @@ const Page = () => {
 const recRef = useRef(null);
 const startStreaming = () => {
   if (!isListening) {
-    
-    recRef.current = startSpeechRecognition(language);
+    recRef.current = startSpeechRecognition('bn-IN');
     setIsListening(true);
   } else {
     recRef.current?.stop();
@@ -222,7 +80,7 @@ const startStreaming = () => {
 };
 
 
-  
+  let arr = [{ user: "Hello", model: "Yes how can i help you" }];
   const image = useRef();
   const file = useRef();
   const imageTrigger = (params) => {
@@ -231,71 +89,66 @@ const startStreaming = () => {
   
   return (
     <>
-      <div className="flex justify-center items-center flex-col">      
-        <div className="analyze-ai flex flex-col items-center w-[78vw] h-[72vh]">
+      <div className="flex gap-3 relative">
+        <div className="recent-search bg-[#FFF9D6] w-[22vw] h-[82.5vh]">
+          <div className="flex items-center gap-2 mb-2">
+            <Image
+              src={"/clock.svg"}
+              width={20}
+              height={20}
+              className="ml-2 mt-7" alt=""
+            ></Image>
+            <p className="font-bold mt-7">Recent Searches</p>
+          </div>
+          <div className="search-history flex flex-col gap-2 ml-5">
+            <div className="bg-[#D9D9D9] w-[250] rounded-2xl p-4 cursor-pointer">
+              <p className="font-bold">Tomato leaf Disease</p>
+              <p className="text-xs">Fungal infection</p>
+              <p className="text-xs">Date:- 19 sept 2026</p>
+            </div>
+            <div className="bg-[#D9D9D9] w-[250] rounded-2xl p-4 cursor-pointer">
+              <p className="font-bold">Tomato leaf Disease</p>
+              <p className="text-xs">Fungal infection</p>
+              <p className="text-xs">Date:- 19 sept 2026</p>
+            </div>
+            <div className="bg-[#D9D9D9] w-[250] rounded-2xl p-4 cursor-pointer">
+              <p className="font-bold">Tomato leaf Disease</p>
+              <p className="text-xs">Fungal infection</p>
+              <p className="text-xs">Date:- 19 sept 2026</p>
+            </div>
+          </div>
+        </div>
+        <div className="analyze-ai flex flex-col items-center w-[78vw] h-[75vh]">
           <p className="text-xl text-center mt-6 mb-4">
             Ask me anything about crops, pests, weather, soil or farming
           </p>
 
-          <div className="w-[90vw] h-[70vh] overflow-y-auto flex flex-col gap-3 p-3">
+          <div className="w-[70vw] h-[75vh] overflow-y-auto flex flex-col gap-3 p-3">
             {arr.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
-                {msg.picture && (
+                {msg.user && (
                   <div className="flex justify-end">
-                    <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
-                      <Image loading="lazy" src={`${msg.picture}`} height={150} width={150} alt="" />
+                    <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
+                      {msg.user}
                     </div>
                   </div>
                 )}
-                {msg?.conversation?.user && (
-                  <div className="flex justify-end">
-                    <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
-                      {msg.conversation.user}
-                    </div>
-                  </div>
-                )}
-                {msg.isApproved && (
-                  <div className="flex justify-end">
-                    <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
-                      {msg.isApproved === 'Moderate' || msg.isApproved==='Low'?
-                      (
-                         <span className="text-yellow-500">Warning: Moderate or Low approval</span>
-                      ):(
-                        <span className="text-green-500">All good!</span>
-                      )
-
-                      }
-                    </div>
-                  </div>
-                )}
-                {msg.conversation?.gemini && (
+                {msg.model && (
                   <div className="flex justify-start">
-                    <div className=" max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
-                      {msg.conversation.gemini}
+                    <div className="text-xs max-w-[70%] px-3 py-2 rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
+                      {msg.model}
                     </div>
                   </div>
                 )}
-
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-[70vw] px-4 py-3 ">
-          <button className="border-none px-2 p-4 bg-green-400 rounded-xl cursor-pointer" onClick={()=>{
-            getUserFieldDetails()
-          }}>Field Details</button>
-          <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
-            
-            {imagePreview &&
-          <div className="image-preview absolute bottom-14 left-0 bg-white w-full rounded-t-xl flex flex-col justify-center">
-            <Image className="rounded-xl ml-2 relative" src={imagePreview} width={140} height={140}>
-            </Image>
-            <Image className="absolute top-2 right-3 cursor-pointer" onClick={()=>{
-              removeSelectedPicture()
-            }} src={'/cross.svg'} width={15} height={20} alt="cross"></Image>
-          </div>
-}
+        <div className="flex items-center gap-2 w-[70vw] right-20 px-4 py-3 absolute bottom-1">
+
+          <div className="flex items-center gap-2 flex-1 bg-white rounded-full px-4 py-2.5 border border-gray-200 shadow-sm">
+            {/* Left icon 1 - boxed */}
             <button
               onClick={() => {
                 imageTrigger(image);
@@ -310,8 +163,6 @@ const startStreaming = () => {
               ></Image>
               <input
                 type="file"
-                name="image"
-                onChange={userFileHandleChange}
                 capture="environment"
                 ref={image}
                 className="hidden"
@@ -329,32 +180,28 @@ const startStreaming = () => {
                 width={20}
                 height={20}
               ></Image>
-              <input name="file" onChange={userFileHandleChange} type="file" ref={file} className="hidden" />
+              <input type="file" ref={file} className="hidden" />
             </button>
 
-            
             <textarea ref={text}
               rows={1}
-              name="text"
-              onChange={handlechange}
               placeholder="Type Your Question Here..."
-              className="flex-1  bg-transparent outline-none text-sm text-gray-700 
-                     placeholder-gray-400 resize-none overflow-y-auto leading-6 "
+              className="flex-1 bg-transparent outline-none text-sm text-gray-700 
+                     placeholder-gray-400 resize-none overflow-hidden leading-6"
             />
+
             <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
               <Image src={isListening?`/mic-off.svg`:`mic.svg`} alt="mic" width={20} height={20}></Image>
             </button>
           </div>
-           {!isLoading?(   
-          <button onClick={()=>{sendData()}}
+
+          <button
             className="w-13 h-13 rounded-full bg-white border border-gray-200 
                          shadow-sm flex items-center justify-center flex-shrink-0 
                          hover:bg-gray-50 cursor-pointer"
           >
             <Image src={"/send.svg"} alt="send" width={20} height={20}></Image>
-          </button>)
-            :(<GlowButton loading={isLoading}></GlowButton>)}
-          
+          </button>
         </div>
       </div>
     </>
