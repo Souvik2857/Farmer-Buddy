@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className="grid grid-cols-3 items-center bg-[#6B352A] p-2">
         <Image
           src={
-            "https://res.cloudinary.com/deuhdw4fr/image/upload/v1789709955/Farmer-buddy-image_l5morw.jpg"
+            '/icon.jpg'
           }
           alt="Image not loaded"
           width={90}

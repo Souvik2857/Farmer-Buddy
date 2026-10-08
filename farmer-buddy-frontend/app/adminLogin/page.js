@@ -3,7 +3,7 @@ import AdminLogin from '@/components/AdminLogin'
 const page = () => {
   return (
     <div className='flex justify-center items-center'>
-      <AdminLogin Name={"Login"} isLoginPage={true}></AdminLogin>
+      <AdminLogin Name={"Login"}></AdminLogin>
     </div>
   )
 }

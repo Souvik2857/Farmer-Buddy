@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-const AdminLogin = ({Name,isLoginPage}) => {
+const AdminLogin = ({Name}) => {
     const {data:session}=useSession()
     const [isEyeOpen, setisEyeOpen] = useState(true)
     if(session){
@@ -23,7 +23,7 @@ const AdminLogin = ({Name,isLoginPage}) => {
   return (
     <div>
     <div className="w-[30vw] rounded-2xl bg-[#FFF6C3] px-4 pb-8 pt-6 mt-20">
-      {/* Heading */}
+
       <h1 className="text-center text-[28px] font-bold leading-tight text-[#6B3A2A]">
         {Name}
       </h1>
@@ -31,7 +31,6 @@ const AdminLogin = ({Name,isLoginPage}) => {
         Welcome to Farmer Buddy
       </p>
 
-      {/* Email / Number */}
       <div className="mt-8">
         <label className="flex items-center gap-2 text-sm font-medium text-[#4A2412]">
           <span className="inline-block h-4 w-4"><Image src={'/email.svg'} height={30} width={20}></Image></span>
@@ -46,7 +45,6 @@ const AdminLogin = ({Name,isLoginPage}) => {
         />
       </div>
 
-      {/* Password */}
       <div className="mt-4">
         <label className="flex items-center gap-2 text-sm font-medium text-[#4A2412]">
           <span className="inline-block h-4 w-4"><Image src={'/pass.svg'} height={20} width={30}></Image></span>
@@ -66,14 +64,13 @@ const AdminLogin = ({Name,isLoginPage}) => {
         </div>
       </div>
 
-      {/* Forgot password */}
       <div className="mt-3 text-right">
         <a href="#" className="text-xs font-medium text-[#4A2412]">
           Forget Password?
         </a>
       </div>
 
-      {/* Buttons */}
+
       <button
       onClick={()=>{postAdminData()}}
         type="button"
@@ -81,26 +78,7 @@ const AdminLogin = ({Name,isLoginPage}) => {
       >
         Login
       </button>
-      {isLoginPage?
-      (<div className="mt-3 flex justify-center">
-        <Link href={'/adminSignup'}
-          type="button"
-          className="rounded-xl bg-[#6B3426] px-3 py-2.5 text-xs font-semibold text-white cursor-pointer"
-        >
-          Sign in for the first time
-        </Link>
-      </div>):(
-        <div className="mt-3 flex justify-center">
-        <button
-          type="button"
-          className="rounded-xl bg-[#6B3426] px-3 py-2.5 text-xs font-semibold text-white cursor-pointer"
-        >
-          Already have an account? <Link className='text-blue-500 underline' href={'/adminLogin'}>Login</Link>
-        </button>
-      </div>
-      )
-      
-      }
+    
     </div>
     </div>
   )
