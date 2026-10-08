@@ -32,6 +32,7 @@ export const authoptions ={
       const dbUser=await userinfo.findOne({email:session.user.email})
       session.user.email=dbUser.email
       session.user.id=dbUser._id.toString()
+      session.isAdmin=dbUser.isAdmin
       return session
     }
   }

@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
 const adminProfile = new mongoose.Schema({
-    admin: Boolean,
+    isAdmin: {type: Boolean,default:true} ,
     password: String,
     avatar: {type: String, default: ''},
-    username: {type: String, required: true},
+    username: {type: String},
     email: {type: String, required: true},
     language: {type: String, default: 'en'},
 

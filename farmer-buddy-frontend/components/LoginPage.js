@@ -47,6 +47,9 @@ const LoginPage = () => {
             Sign in with Google
           </button>
         </div>
+        <div className="admmin text-center mt-5">
+          Admin? <Link className="text-blue-600 underline" href={'/adminLogin'}>Login/SignUp</Link>
+        </div>
       </div>
     </div>
   );

@@ -1,16 +1,16 @@
 //import jwt from "jsonwebtoken";
 import { adminInfo } from "../models/adminInfo.js";
 import { userinfo } from "../models/userInfo.js";
-
+import bcrypt from 'bcrypt'
 const signup = async(req, res) => {
     try {
-        const { admin, username, email, language } = req.body;
+        const { email, password } = req.body;
 
         if( await adminInfo.findOne({ email })){
             return res.status(400).json({error: 'Email registered already'});
         }
-        
-        const administer = await adminInfo.create({admin, key, username, email, password});
+        const hashedPassWord=await bcrypt.hash(password, 10)
+        const administer = await adminInfo.create({email, hashedPassWord});
         return res.status(201).json({success: true, admin: {key: administer.key, email: administer.email}});
     }catch(err){
         res.status(500).json({error: err.message});

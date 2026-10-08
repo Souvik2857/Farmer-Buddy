@@ -243,7 +243,7 @@ const startStreaming = () => {
                 {msg.picture && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
-                      <img src={`${msg.picture}`} height={150} width={150} alt="" />
+                      <Image loading="lazy" src={`${msg.picture}`} height={150} width={150} alt="" />
                     </div>
                   </div>
                 )}

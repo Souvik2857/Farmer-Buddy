@@ -51,9 +51,9 @@ const page = () => {
       })
     }
     getUserData()
-    if(!session){
+
       getIpApi()
-    }
+
   }, [session])
 
 
@@ -151,11 +151,11 @@ const page = () => {
           <div className="w-full">
 
           <p className="mb-1">Language</p>
-          <input type="text" value={formData.language?formData.language:userData.language} className="border w-full px-3 py-2" />
+          <input type="text" onChange={handleChange} value={userData.language} className="border w-full px-3 py-2" />
           </div>
           <div className="w-full">
           <p className="mb-1">Location</p>
-          <input type="text" value={formData.location?.city?formData.location.city:userData.location} className="border w-full px-3 py-2" />
+          <input type="text" onChange={handleChange} name="language" value={userData.location} className="border w-full px-3 py-2" />
           </div>
           <button onClick={()=>{sendData()}} className="bg-[#6B352A] p-3 px-6 rounded-xl mt-2 text-white cursor-pointer w-full sm:w-auto">Save</button>
         </div>
