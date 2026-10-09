@@ -148,14 +148,26 @@ try {
     if (req.body.text==="{}") {
       return res.status(404).json({status:404,message:"Enter message"})
     }
-    const {weatherData}=req.body || ""
-    const {soilData}=req.body || ''
+    const {weatherData}=req.body
+    const {soilData}=req.body
     const fileUrl = req.file?.path;
     const data = req.body; 
     const userData = req.user;
     const prompt = JSON.parse(data.text).text;
-    const soil=JSON.parse(soilData)
-    const weather=JSON.parse(weatherData)
+    let soil
+    if(soilData != 'undefined'){
+      soil=JSON.parse(soilData)
+    }
+    else{
+      soil=""
+    }
+    let weather
+    if(weatherData!= 'undefined'){
+      weather=JSON.parse(weatherData)
+    }
+    else{
+      weather=""
+    }
     
     let fileUpload=''
     if(fileUrl)  {
