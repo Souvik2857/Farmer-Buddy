@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useState,useEffect } from "react";
 import Image from "next/image";
 import NextAuth from "next-auth";
 import Link from "next/link";
@@ -8,10 +9,48 @@ import { signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 const Navbar = () => {
-  const { data: session } = useSession();
+  const { data: session ,status} = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const pageName = pathname.split("/").filter(Boolean).pop();
+  const [checkAdmin, setCheckAdmin] = useState(true)
+  const [verified, setVerified] = useState(false)   
+  useEffect(() => {
+    const getAdminStatus=async()=>{
+      try {
+        const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+          credentials:'include'
+        })
+        const data=await res.json()
+        if(data.status===200){
+          setVerified(true)
+        }
+      } catch (error) {
+        console.log(error);      
+      }
+      finally{
+        setCheckAdmin(false)
+      }
+    }
+    getAdminStatus()
+  }, [])
+  const isLoggedIn=Boolean(session) || verified
+
+  const handleLogout=async()=>{
+    if(session){
+      signOut({ callbackUrl: '/login' })
+    }
+    else if(verified){
+      const res=await fetch("http://localhost:5000/api/v1/admin/logout",{
+        credentials:'include'
+      })
+      const data=await res.json()
+      if(data.status===200){
+        setVerified(false)
+        router.push('/login')
+      }
+    }
+  }
 
   return (
     <>
@@ -50,7 +89,7 @@ const Navbar = () => {
               <option value="/analyze">Analyze</option>
             </select>
           )}
-          {!session ? (
+          {!isLoggedIn? (
             <Link
               className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] border-0 cursor-pointer hover:bg-green-500"
               href={"/login"}
@@ -61,9 +100,7 @@ const Navbar = () => {
             <Link
               className="border mr-2 pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] border-0 cursor-pointer hover:bg-green-500"
               href={"/login"}
-              onClick={() => {
-                signOut();
-              }}
+              onClick={handleLogout}
             >
               Logout
             </Link>

@@ -8,17 +8,29 @@ import Link from 'next/link'
 const AdminLogin = ({Name}) => {
     const {data:session}=useSession()
     const [isEyeOpen, setisEyeOpen] = useState(true)
+    const router=useRouter()
     if(session){
-        const router=useRouter()
         router.push('/profile')
     }
     const [adminData, setadminData] = useState({})
     const handler=(e)=>{
         setadminData({...adminData,[e.target.name]:e.target.value})
     }
-    const postAdminData=()=>{
-        console.log(adminData);
-        
+    const postAdminData=async()=>{
+        const res=await fetch('http://localhost:5000/api/v1/admin/adminLogin',
+          {
+            method:'POST',
+            credentials:'include',
+            headers:{
+              'Content-Type':'application/json'
+            },
+            body:JSON.stringify(adminData)
+          })
+        const data=await res.json()
+        if(data.status===200){
+          router.push('/profile')
+        }
+   
     }
   return (
     <div>
@@ -37,7 +49,7 @@ const AdminLogin = ({Name}) => {
           E-mail
         </label>
         <input
-          type="text"
+          type="email"
           onChange={handler}
           placeholder="Enter your e-mail"
           name='email'

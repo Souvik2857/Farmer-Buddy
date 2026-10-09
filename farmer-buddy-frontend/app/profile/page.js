@@ -8,13 +8,38 @@ import Image from "next/image";
 
 const Page = () => {
   const { data: session, status } = useSession();
+  const [isVerified, setisVerified] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
-  // if (session == null) {
-  //   router.push("/login");
-  // }
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
-  }, [status, router]);
+    const verifyAdmin=async()=>{
+      try {
+        const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+          credentials:'include'
+        })
+        const data=await res.json()
+        if(data.status===200){
+        setisVerified(true)
+        setForm(data.adminData) 
+        setSelectedFile(data.adminData?.avatar)
+        if (data.adminData?.avatar) setPreview(data.adminData.avatar.replace("http://", "https://"));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      finally{
+        setIsLoading(false)
+      }
+    }
+ verifyAdmin()
+  }, [])
+  
+  useEffect(() => {
+    if(isLoading || status ==="loading"){
+      return
+    }
+    if (!session && !isVerified ) router.push("/login");
+  }, [status, router,isLoading,session,isVerified]);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("/avatar.svg");
@@ -83,6 +108,7 @@ const Page = () => {
   form.append("avatar",selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
+  form.append("isAdmin", isVerified)
   form.append("location", userData.location)
   form.append("country", userData.country)
   form.append("language", userData.language)
