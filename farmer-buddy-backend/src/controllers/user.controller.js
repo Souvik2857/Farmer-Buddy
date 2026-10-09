@@ -156,6 +156,7 @@ try {
     const prompt = JSON.parse(data.text).text;
     const soil=JSON.parse(soilData)
     const weather=JSON.parse(weatherData)
+    
     let fileUpload=''
     if(fileUrl)  {
       fileUpload = await uploadonCloudinary(fileUrl);

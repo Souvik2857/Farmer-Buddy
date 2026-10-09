@@ -30,7 +30,7 @@ const Page = () => {
     setForm(data.userData) 
     setSelectedFile(data.userData?.avatar)
     if (data.userData?.avatar) setPreview(data.userData.avatar.replace("http://", "https://"));
-    return data.userData;
+
   }
   let dataCity
   let latitude
@@ -55,10 +55,9 @@ const Page = () => {
                 "country":country,
                 "state":state
       })
-    },
-    getUserData(),
-
-      getIpApi()
+    }
+    getUserData()
+    getIpApi()
 
   }, [session])
 

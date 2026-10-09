@@ -25,9 +25,10 @@ const getWeather = async (latitude, longitude) => {
 
 const getSoilData = async(latitude, longitude) => {
     try{
+        
         const soilRes = await fetch(`https://rest.isric.org/soilgrids/v2.0/properties/query?lon=${longitude}&lat=${latitude}&property=phh2o&property=nitrogen&property=soc&property=clay&property=sand&property=silt&property=cec&property=bdod&depth=0-5cm&depth=5-15cm&depth=15-30cm&depth=30-60cm&value=mean&value=Q0.05&value=Q0.95`);
         const soilData = await soilRes.json();
-
+        
         if(soilData.error){
             return null;
         }
