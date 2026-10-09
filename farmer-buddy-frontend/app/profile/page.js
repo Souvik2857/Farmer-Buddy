@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { getUserLanguage } from "@/utils/languageDetection.js";
 import Image from "next/image";
-const page = () => {
-  const { data: session } = useSession();
+
+const Page = () => {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  if (session == null) {
-    router.push("/login");
-  }
+  // if (session == null) {
+  //   router.push("/login");
+  // }
+  useEffect(() => {
+    if (status === "unauthenticated") router.push("/login");
+  }, [status, router]);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState("/avatar.svg");
@@ -25,6 +29,8 @@ const page = () => {
     const data=await res.json()
     setForm(data.userData) 
     setSelectedFile(data.userData?.avatar)
+    if (data.userData?.avatar) setPreview(data.userData.avatar.replace("http://", "https://"));
+    return data.userData;
   }
   let dataCity
   let latitude
@@ -49,8 +55,8 @@ const page = () => {
                 "country":country,
                 "state":state
       })
-    }
-    getUserData()
+    },
+    getUserData(),
 
       getIpApi()
 
@@ -74,6 +80,7 @@ const page = () => {
   
   const sendData=async()=>{
   const form = new FormData();
+  if(selectedFile)
   form.append("avatar",selectedFile);
   form.append("username", formData.username);
   form.append("email", formData.email);
@@ -164,4 +171,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
