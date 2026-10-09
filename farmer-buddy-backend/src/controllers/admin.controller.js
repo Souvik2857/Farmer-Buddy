@@ -1,7 +1,24 @@
-//import jwt from "jsonwebtoken";
 import { adminInfo } from "../models/adminInfo.js";
 import { userinfo } from "../models/userInfo.js";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
+const generateAccessAndRefreshToken=async(id)=>{
+    try {
+        const admin=await adminInfo.findById(id);
+        
+        const accessToken=await admin.generateAccessToken()
+        const refreshToken=await admin.generateRefreshToken()
+        admin.refreshToken=refreshToken
+        return {
+            accessToken,refreshToken
+        }
+    } catch (err) {
+        return false
+    }
+}
+
+
 const signup = async(req, res) => {
     try {
         const { email, password } = req.body;
@@ -10,8 +27,8 @@ const signup = async(req, res) => {
             return res.status(400).json({error: 'Email registered already'});
         }
         const hashedPassWord=await bcrypt.hash(password, 10)
-        const administer = await adminInfo.create({email, hashedPassWord});
-        return res.status(201).json({success: true, admin: {key: administer.key, email: administer.email}});
+        const administer = await adminInfo.create({email:email, password:hashedPassWord});
+        return res.status(201).json({success: true});
     }catch(err){
         res.status(500).json({error: err.message});
     }
@@ -20,20 +37,34 @@ const signup = async(req, res) => {
 const login = async(req, res) => {
     try {
         const { email, password } = req.body;
+        
+        if(!email || !password){
+            return res.status(404).json({status:404,message:"Enter email and Password"})
+        }
         const admin = await adminInfo.findOne({ email });
 
         if(!admin){
-            return res.status(404).json({error: 'Admin not found'});
+            return res.status(401).json({status:401,message: 'Invalid email or password'});
         }
-
-        if(admin.password !== password){
-            return res.status(401).json({error: 'Incorrect Password'});
+        const comparePassword=await bcrypt.compare(password, admin.password)
+        if(!comparePassword){
+            return res.status(401).json({status:401,message:"Invalid email or password"})
         }
+        const {accessToken,refreshToken}=await generateAccessAndRefreshToken(admin._id)
 
-        //const token = jwt.sign({id: admin._id, });
-        res.status(200).json({success: true, token});
+        
+        const loggedInAdmin=await adminInfo.findById(admin._id).select(
+            "-password -refreshToken"
+        )
+        const options={
+            httpOnly:true,
+            secure:true
+        }
+        return res.status(200).cookie("accessToken",accessToken,options).cookie("refreshToken",refreshToken,options).json({status:200,data:loggedInAdmin})
+        
     }catch(err){
-        res.status(500).json({error: err.message});
+        console.log(err);
+        return res.status(500).json({error: err.message});
     }
 };
 
