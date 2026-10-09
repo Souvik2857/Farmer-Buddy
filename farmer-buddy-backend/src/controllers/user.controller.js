@@ -70,7 +70,7 @@ const getHist = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { email } = req.user;
+    const { email } = req.body;
     const avatar = req.file?.path;
     let avatarURL;
     if (avatar) {
@@ -98,7 +98,7 @@ const updateUser = async (req, res) => {
           country: req.body?.country || "",
           state: req.body?.state,
         },
-
+        isAdmin:req.body.isAdmin,
         cordinates: {
           latitude: req.body?.latitude || "",
           longitude: req.body?.longitude || "",

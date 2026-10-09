@@ -10,11 +10,11 @@ const userProfile = new mongoose.Schema({
         country: {type: String, default: null},
         state:{type:String,default:null}
     },
-
     cordinates: {
         latitude: String,
         longitude: String
-    }
+    },
+    isAdmin:{type:Boolean,default:false}
 });
 
 export const userinfo = mongoose.model('userinfo', userProfile);

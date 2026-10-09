@@ -9,7 +9,8 @@ const generateAccessAndRefreshToken=async(id)=>{
         
         const accessToken=await admin.generateAccessToken()
         const refreshToken=await admin.generateRefreshToken()
-        admin.refreshToken=refreshToken
+        admin.refreshToken=await refreshToken
+        await admin.save()
         return {
             accessToken,refreshToken
         }
@@ -21,12 +22,13 @@ const generateAccessAndRefreshToken=async(id)=>{
 const getAdmin = async(req, res) => {
     try{
         const { email } = req.body;
-        const admin = await adminInfo.findOne({ email });
 
+        const admin = await adminInfo.findOne({email}).select("-password -refreshToken");
+        const adminData=await userinfo.findOne({email:admin.email}).select("-password -refreshToken");
         if(!admin){
             return res.status(404).json({error: 'Admin not Found'});
         }
-        return res.status(200).json({success: true, email});
+        return res.status(200).json({status:200, adminData});
     }catch(err){
         return res.status(500).json({error: err.message});
     }
@@ -66,7 +68,14 @@ const login = async(req, res) => {
         }
         const {accessToken,refreshToken}=await generateAccessAndRefreshToken(admin._id)
 
-        
+        const existingAdmin=await userinfo.findOne({email})
+        if(!existingAdmin){
+            const adminAsUser=await userinfo.create({ 
+                username:email.split('@')[0],
+                email:email,
+                isAdmin:true
+            })
+        }
         const loggedInAdmin=await adminInfo.findById(admin._id).select(
             "-password -refreshToken"
         )
@@ -81,6 +90,33 @@ const login = async(req, res) => {
         return res.status(500).json({error: err.message});
     }
 };
+
+const logout=async(req,res)=>{
+    try {
+        const admin=await adminInfo.findByIdAndUpdate(
+            req.body._id,
+            {
+                $set:{
+                    refreshToken:undefined
+                },
+            },
+            {
+                returnDocument:'after'
+            }
+        )
+        const options={
+            httpOnly:true,
+            secure:true
+        };
+        return res.status(200).clearCookie("refreshToken",options).
+        clearCookie("accessToken",options).json({status:200,message:"User logged Out"})
+    } catch (error) {
+        console.log(error);
+        
+        return res.status(500).json({status:500,message:"User login failed"})
+    }
+
+}
 
 const getUserByAdminLoct = async(req, res) => {
     try{
@@ -120,4 +156,4 @@ const reviewChat = async(req, res) => {
     }
 }
 
-export { signup, login, getUserByAdminLoct, reviewChat };
+export { signup, login, getUserByAdminLoct, reviewChat ,getAdmin,logout};
