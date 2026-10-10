@@ -58,7 +58,8 @@ const login = async(req, res) => {
             return res.status(404).json({status:404,message:"Enter email and Password"})
         }
         const admin = await adminInfo.findOne({ email });
-
+        
+        
         if(!admin){
             return res.status(401).json({status:401,message: 'Invalid email or password'});
         }

@@ -125,6 +125,7 @@ const updateUser = async (req, res) => {
           avatar: avatarURL ,
           username: req.body?.username,
           email: email,
+          password:findUser.password,
           language: req.body?.language,
           location: {
             city: req.body?.location || "",
