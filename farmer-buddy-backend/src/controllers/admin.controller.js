@@ -23,9 +23,9 @@ const getAdmin = async(req, res) => {
     try{
         const { email } = req.body;
 
-        const admin = await adminInfo.findOne({email}).select("-password -refreshToken");
-        const adminData=await userinfo.findOne({email:admin.email}).select("-password -refreshToken");
-        if(!admin){
+        const adminData = await adminInfo.findOne({email}).select("-password -refreshToken");
+        
+        if(!adminData){
             return res.status(404).json({error: 'Admin not Found'});
         }
         return res.status(200).json({status:200, adminData});
@@ -67,15 +67,6 @@ const login = async(req, res) => {
             return res.status(401).json({status:401,message:"Invalid email or password"})
         }
         const {accessToken,refreshToken}=await generateAccessAndRefreshToken(admin._id)
-
-        const existingAdmin=await userinfo.findOne({email})
-        if(!existingAdmin){
-            const adminAsUser=await userinfo.create({ 
-                username:email.split('@')[0],
-                email:email,
-                isAdmin:true
-            })
-        }
         const loggedInAdmin=await adminInfo.findById(admin._id).select(
             "-password -refreshToken"
         )
@@ -93,11 +84,12 @@ const login = async(req, res) => {
 
 const logout=async(req,res)=>{
     try {
+        
         const admin=await adminInfo.findByIdAndUpdate(
             req.body._id,
             {
                 $set:{
-                    refreshToken:undefined
+                    refreshToken:null
                 },
             },
             {

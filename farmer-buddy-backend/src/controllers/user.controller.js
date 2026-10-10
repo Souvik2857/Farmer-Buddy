@@ -9,6 +9,7 @@ import { processedAvatar } from "../middleware/sharp.js";
 import { getWeather, getSoilData } from "../utils/getWeather.js";
 import languageDetect from "../utils/languageDetection.js";
 import { getAiResponse } from "../utils/aiAnalyze.js";
+import { adminInfo } from "../models/adminInfo.js";
 
 
 const newUser = async (req, res) => {
@@ -76,7 +77,13 @@ const updateUser = async (req, res) => {
     if (avatar) {
       avatarURL = await uploadonCloudinary(avatar);
     }
-    const findUser = await userinfo.findOne({ email });
+    let findUser
+    if(!req.body.isAdmin){
+      findUser = await userinfo.findOne({ email });
+    }
+    if(req.body.isAdmin){
+      findUser = await adminInfo.findOne({ email });   
+    }
 
     if (!findUser) {
       res.status(404).json({ error: "User Not Found" });
@@ -86,17 +93,18 @@ const updateUser = async (req, res) => {
     if (preUrl != "") {
       await deleteImageOnCloudinary(preUrl);
     }
-    const updated = await userinfo.findOneAndReplace(
-      { email },
-      {
-        avatar: avatarURL,
-        username: req.body?.username,
-        email: email,
-        language: req.body?.language,
-        location: {
-          city: req.body?.location || "",
-          country: req.body?.country || "",
-          state: req.body?.state,
+    if(!req.body.isAdmin){
+      const updated = await userinfo.findOneAndReplace(
+        { email },
+        {
+          avatar: avatarURL,
+          username: req.body?.username,
+          email: email,
+          language: req.body?.language,
+          location: {
+            city: req.body?.location || "",
+            country: req.body?.country || "",
+            state: req.body?.state,
         },
         isAdmin:req.body.isAdmin,
         cordinates: {
@@ -107,9 +115,34 @@ const updateUser = async (req, res) => {
       { returnDocument: "after", runValidators: true },
     );
     return res
-      .status(201)
-      .json({ status: 201, message: "user updated successfully" });
-
+    .status(201)
+    .json({ status: 201, message: "user updated successfully" });
+  }
+  if(req.body.isAdmin){
+    const updated = await adminInfo.findOneAndReplace(
+        { email },
+        {
+          avatar: avatarURL ,
+          username: req.body?.username,
+          email: email,
+          language: req.body?.language,
+          location: {
+            city: req.body?.location || "",
+            country: req.body?.country || "",
+            state: req.body?.state,
+        },
+        isAdmin:req.body.isAdmin,
+        coordinates: {
+          latitude: req.body?.latitude || "",
+          longitude: req.body?.longitude || "",
+        },
+      },
+      { returnDocument: "after", runValidators: true },
+    );
+    return res
+    .status(201)
+    .json({ status: 201, message: "user updated successfully" });
+  }
     
   } catch (err) {
     console.error("Updatation Failed", err.message);

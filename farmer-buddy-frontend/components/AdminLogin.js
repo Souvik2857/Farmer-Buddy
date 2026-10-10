@@ -8,10 +8,12 @@ import Link from 'next/link'
 const AdminLogin = ({Name}) => {
     const {data:session}=useSession()
     const [isEyeOpen, setisEyeOpen] = useState(true)
+    const [isLoggedIn, setisLoggedIn] = useState(false)
     const router=useRouter()
     if(session){
         router.push('/profile')
     }
+    
     const [adminData, setadminData] = useState({})
     const handler=(e)=>{
         setadminData({...adminData,[e.target.name]:e.target.value})
@@ -29,6 +31,7 @@ const AdminLogin = ({Name}) => {
         const data=await res.json()
         if(data.status===200){
           router.push('/profile')
+          setisLoggedIn(true)
         }
    
     }

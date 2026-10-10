@@ -15,6 +15,7 @@ const Navbar = () => {
   const pageName = pathname.split("/").filter(Boolean).pop();
   const [checkAdmin, setCheckAdmin] = useState(true)
   const [verified, setVerified] = useState(false)   
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     const getAdminStatus=async()=>{
       try {
@@ -25,6 +26,9 @@ const Navbar = () => {
         if(data.status===200){
           setVerified(true)
         }
+        else{
+          setVerified(false)
+        }
       } catch (error) {
         console.log(error);      
       }
@@ -33,8 +37,13 @@ const Navbar = () => {
       }
     }
     getAdminStatus()
-  }, [])
-  const isLoggedIn=Boolean(session) || verified
+  }, [pathname])
+
+useEffect(() => {
+  setIsLoggedIn(Boolean(session) || verified);
+}, [session, verified]);
+
+  
 
   const handleLogout=async()=>{
     if(session){
@@ -47,6 +56,7 @@ const Navbar = () => {
       const data=await res.json()
       if(data.status===200){
         setVerified(false)
+        setIsLoggedIn(false)
         router.push('/login')
       }
     }
@@ -68,11 +78,11 @@ const Navbar = () => {
           <div className="w-90 border p-5 rounded-2xl bg-[#FFF1A6]"><p className="text-center text-3xl font-bold text-green-500 ">Farmer Buddy</p></div>
         )}</div>
         <div className="justify-self-end flex items-center gap-1">
-          {!session ? (
+          {!session && !isLoggedIn? (
             <Link href={'/analyze'} className="border pl-4 pr-4 pt-2.5 pb-2.5 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500">
               Analyze
             </Link>
-          ) : (
+          ) : session?(
             <select
               className="border-0 p-3 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500"
               onChange={(e) => {
@@ -87,6 +97,23 @@ const Navbar = () => {
               </option>
               <option value="/profile">Profile</option>
               <option value="/analyze">Analyze</option>
+            </select>
+          ):(
+            <select
+              className="border-0 p-3 rounded-xl bg-[#39FF88] cursor-pointer hover:bg-green-500"
+              onChange={(e) => {
+                if (e.target.value) {
+                  router.push(e.target.value);
+                }
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled hidden>
+                Select Option
+              </option>
+              <option value="/profile">Profile</option>
+              <option value="/analyze">Analyze</option>
+              <option value="/dashboard">Dashboard</option>
             </select>
           )}
           {!isLoggedIn? (

@@ -12,6 +12,7 @@ const adminProfile = new mongoose.Schema(
     location: {
       city: { type: String, default: null },
       country: { type: String, default: null },
+      state:{type:String,default:null}
     },
 
     coordinates: {
