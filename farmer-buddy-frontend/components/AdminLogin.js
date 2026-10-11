@@ -13,12 +13,14 @@ const AdminLogin = ({Name}) => {
     if(session){
         router.push('/profile')
     }
-    
+    const verifiCation = useRef()
     const [adminData, setadminData] = useState({})
     const handler=(e)=>{
         setadminData({...adminData,[e.target.name]:e.target.value})
     }
     const postAdminData=async()=>{
+        verifiCation.current.style.color="green"
+        verifiCation.current.innerText="Verifying Admin Credentials"
         const res=await fetch('http://localhost:5000/api/v1/admin/adminLogin',
           {
             method:'POST',
@@ -28,10 +30,15 @@ const AdminLogin = ({Name}) => {
             },
             body:JSON.stringify(adminData)
           })
-        const data=await res.json()
-        if(data.status===200){
-          router.push('/profile')
-          setisLoggedIn(true)
+          const data=await res.json()
+          if(data.status===200){
+            verifiCation.current.innerText="Admin verified"
+            router.push('/profile')
+            setisLoggedIn(true)
+          }
+          else if(data.status===401 || data.status===404){
+          verifiCation.current.style.color="red"
+          verifiCation.current.innerText=`${data.message}`        
         }
    
     }
@@ -84,8 +91,7 @@ const AdminLogin = ({Name}) => {
           Forget Password?
         </a>
       </div>
-
-
+      <div ref={verifiCation} className='text-center text-red-900 font-bold'></div>
       <button
       onClick={()=>{postAdminData()}}
         type="button"

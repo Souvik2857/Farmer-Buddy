@@ -55,7 +55,7 @@ const login = async(req, res) => {
         const { email, password } = req.body;
         
         if(!email || !password){
-            return res.status(404).json({status:404,message:"Enter email and Password"})
+            return res.status(404).json({status:404,message:"Enter email and Password Properly"})
         }
         const admin = await adminInfo.findOne({ email });
         
