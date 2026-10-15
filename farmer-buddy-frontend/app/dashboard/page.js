@@ -3,6 +3,7 @@ import React from 'react'
 import { useState,useEffect,useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import UserDataCard from '@/components/UserDataCard'
 const page = () => {
     const router=useRouter()
     const [verified, setVerified] = useState(false)
@@ -10,6 +11,8 @@ const page = () => {
     const [location, setlocation] = useState("")
     const [userLogs, setUserLogs] = useState([])
     const [filteredLogs, setFilteredLogs] = useState([])
+    const [currentLog, setcurrentLog] = useState(null)
+    const [isLogOpen, setisLogOpen] = useState(false)
     const logCondition = useRef()
     useEffect(() => {
         const verifiedAdmin=async()=>{
@@ -74,14 +77,20 @@ const page = () => {
     const filtered= userLogs.filter(item=>item.isApproved===isApproved)     
     setFilteredLogs(filtered)
 }
-
-
+  const setCurrentLog=(email,createdAt)=>{
+      setisLogOpen(true)
+      setcurrentLog({email:email,createdAt:createdAt})
+  }
+  const closeCurrentLog=()=>{
+    setisLogOpen(false)
+    setcurrentLog(null)
+  }
   return (
     <>
-    <div className="h-[70vh] w-[70vw] mx-auto bg-[#FFF0A5] px-4 pt-2 pb-6">
+    <div className="h-[70vh] w-[70vw] mx-auto bg-[#FFF0A5] px-4 pt-2 pb-6 relative">
       {/* Location */}
       <div className="flex justify-end">
-        <input className='border text-center bg-amber-900 text-white p-3 rounded-2xl' type="text" value={location}/>
+        <input className='border text-center bg-amber-900 text-white p-3 rounded-2xl' type="text" readOnly value={location}/>
       </div>
       {/* Status pills */}
       <div className="mt-10 flex items-center justify-between">
@@ -118,10 +127,12 @@ const page = () => {
       return  (<div key={index} className={`mt-5 grid grid-cols-3 w-full max-w-[60vw] items-center justify-center rounded-2xl ${bgByConfidence[items?.confidence]} px-3 py-6 text-sm text-black`}>
       <span className="">•User: {items?.userEmail}</span>
       <span className="">{items?.conversation?.user}</span>
-      <span className="flex justify-end"><Image src={'/expand.svg'} alt='expand' width={20} height={20} className='cursor-pointer'></Image></span>
+      <span className="flex justify-end"><Image onClick={()=>{setCurrentLog(items.userEmail,items.createdAt)}} src={'/expand.svg'} alt='expand' width={20} height={20} className='cursor-pointer'></Image></span>
     </div>)
     })}
       </div>
+      {isLogOpen&&<div className='absolute top-10 right-20'><UserDataCard email={currentLog.email} createdAt={currentLog.createdAt}></UserDataCard>
+      <Image src={'/cross.svg'} onClick={()=>{closeCurrentLog()}} className='absolute top-3 right-2 cursor-pointer' alt='cross' width={20} height={20}></Image></div>}
     </div>
 
     </>
