@@ -20,5 +20,5 @@ router.route('/adminLogin').post(login)
 router.route('/adminSignup').post(signup)
 router.route('/logout').get(verifyAdmin,logout)
 router.route('/verifyAdmin').get(verifyAdmin,getAdmin)
-router.route('/getUserDetails').post(getUserByAdminLoct)
+router.route('/getUserDetails').get(verifyAdmin,getUserByAdminLoct)
 export default router;

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const userHistory = new mongoose.Schema({
   userEmail: { type: String, required: true, default: "" },
+  location:{type:String,required:true},
   conversation: {
     user: { type: String, default: "" },
     gemini: { type: String, default: "" },

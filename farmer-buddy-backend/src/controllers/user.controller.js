@@ -124,7 +124,7 @@ const updateUser = async (req, res) => {
     .json({ status: 201, message: "user updated successfully" });
   }
   if(JSON.parse(req.body.isAdmin)){
-    const updated = await adminInfo.findOneAndReplace(
+    const updated = await adminInfo.findOneAndUpdate(
         { email },
         {
           avatar: avatarURL ,
@@ -189,6 +189,8 @@ try {
     }
     const {weatherData}=req.body
     const {soilData}=req.body
+    const user=await userinfo.findOne({email:req.user.email})
+    const userLocation=user.location?.city 
     const fileUrl = req.file?.path;
     const data = req.body; 
     const userData = req.user;
@@ -236,6 +238,7 @@ try {
     if(approved){
       const userHistory = await userConvo.create({
         userEmail: userData.email,
+        location:userLocation || "",
         conversation: {
           user: prompt,
           gemini: geminiReply,
@@ -277,6 +280,8 @@ try {
     return res.status(200).json({...userConvoData});
       
 } catch (error) {
+  console.log(error);
+  
   return res.status(500).json({status:500,message:`internal server error ${error}`})
 }
 };

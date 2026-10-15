@@ -54,12 +54,10 @@ const signup = async(req, res) => {
 const login = async(req, res) => {
     try {
         const { email, password } = req.body;
-        
         if(!email || !password){
             return res.status(404).json({status:404,message:"Enter email and Password Properly"})
         }
         const admin = await adminInfo.findOne({ email });
-        
         
         if(!admin){
             return res.status(401).json({status:401,message: 'Invalid email or password'});
@@ -115,12 +113,13 @@ const logout=async(req,res)=>{
 const getUserByAdminLoct = async(req, res) => {
     try{
         const { email } = req.body;
+
         const admin = await adminInfo.findOne({ email });
         
         if(!admin){
             return res.status(404).json({error: 'Not Admin/ Admin not found'});
         }
-        const users = await userinfo.find({'location.city': admin.location.city});
+        const users = await userConvo.find({location: admin.location.city}).select("-summary -picture");
         res.status(200).json({city: admin.location.city, users});
     }catch(err){
         res.status(500).json({error: err.message});
