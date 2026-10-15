@@ -8,7 +8,7 @@ const userProfile = new mongoose.Schema({
         city: {type: String, default: ''},
         country: {type: String, default: ''}
     },
-    isAdmin:{type:String,default:false}
+    isAdmin:{type:Boolean,default:false}
 });
 
 export const userinfo = mongoose.model('userinfo', userProfile);

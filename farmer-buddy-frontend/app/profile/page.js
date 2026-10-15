@@ -107,7 +107,7 @@ const Page = () => {
   if(selectedFile)
   form.append("avatar",selectedFile);
   form.append("username", formData.username);
-  form.append("email", formData.email);
+  form.append("email", formData.email); 
   form.append("isAdmin", isVerified)
   form.append("location", userData.location)
   form.append("country", userData.country)
@@ -126,10 +126,9 @@ const Page = () => {
     
   )
   const data=await res.json()
-  if(data.status>=200){
+  if(data.status==201){
     alert("user information saved successfully")
   }
-  
   }
 
   return (

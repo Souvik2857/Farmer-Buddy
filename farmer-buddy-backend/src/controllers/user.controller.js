@@ -73,18 +73,21 @@ const updateUser = async (req, res) => {
   try {
     const { email } = req.body;
     const avatar = req.file?.path;
+    
     let avatarURL;
     if (avatar) {
       avatarURL = await uploadonCloudinary(avatar);
     }
     let findUser
-    if(!req.body.isAdmin){
-      findUser = await userinfo.findOne({ email });
+    if(!JSON.parse(req.body.isAdmin)){
+      findUser = await userinfo.findOne({ email });     
     }
-    if(req.body.isAdmin){
+    if(JSON.parse(req.body.isAdmin)){
+      
       findUser = await adminInfo.findOne({ email });   
     }
 
+    
     if (!findUser) {
       res.status(404).json({ error: "User Not Found" });
     }
@@ -93,23 +96,25 @@ const updateUser = async (req, res) => {
     if (preUrl != "") {
       await deleteImageOnCloudinary(preUrl);
     }
-    if(!req.body.isAdmin){
-      const updated = await userinfo.findOneAndReplace(
+    if(!JSON.parse(req.body.isAdmin)){
+      const updated = await userinfo.findOneAndUpdate(
         { email },
-        {
-          avatar: avatarURL,
-          username: req.body?.username,
-          email: email,
-          language: req.body?.language,
-          location: {
-            city: req.body?.location || "",
+        {$set:
+          {
+            avatar: avatarURL,
+            username: req.body?.username,
+            email: email,
+            language: req.body?.language,
+            location: {
+              city: req.body?.location || "",
             country: req.body?.country || "",
             state: req.body?.state,
-        },
-        isAdmin:req.body.isAdmin,
-        cordinates: {
-          latitude: req.body?.latitude || "",
-          longitude: req.body?.longitude || "",
+          },
+          isAdmin:req.body?.isAdmin,
+          cordinates: {
+            latitude: req.body?.latitude || "",
+            longitude: req.body?.longitude || "",
+          },
         },
       },
       { returnDocument: "after", runValidators: true },
@@ -118,7 +123,7 @@ const updateUser = async (req, res) => {
     .status(201)
     .json({ status: 201, message: "user updated successfully" });
   }
-  if(req.body.isAdmin){
+  if(JSON.parse(req.body.isAdmin)){
     const updated = await adminInfo.findOneAndReplace(
         { email },
         {
