@@ -126,6 +126,24 @@ const getUserByAdminLoct = async(req, res) => {
     }
 };
 
+const chatFullDetails=async(req,res)=>{
+    try {
+        const {email}=req.body
+        const {createdAt}=req.body
+        if(!email && !createdAt){
+            return res.status(404).json({status:404,message:"User email and document creation data required"})
+        }
+        const user=await userConvo.findOne({$and:[{userEmail:email},{createdAt}]})
+        if(!user){
+            return res.status(404).json({status:404,message:"User not found"})
+        }
+        return res.status(200).json({status:200,user})
+    } catch (error) {
+        return res.status(500).json({status:500,message:`There is a problem in fetching data ${error}`})
+    }
+}
+
+
 const reviewChat = async(req, res) => {
     try{
         const { adminEmail, feedback, approval } = req.user;
@@ -149,4 +167,4 @@ const reviewChat = async(req, res) => {
     }
 }
 
-export { signup, login, getUserByAdminLoct, reviewChat ,getAdmin,logout};
+export { signup, login, getUserByAdminLoct, reviewChat ,getAdmin,logout,chatFullDetails};

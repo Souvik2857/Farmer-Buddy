@@ -8,6 +8,7 @@ const MODEL_NAME = "gemini-3.1-flash-lite";
 const getAiResponse = async (previousPrompt = "", prompt, imageUrl = "",weatherData="",soilData="") => {
   const model = ai.getGenerativeModel({
     model: MODEL_NAME,
+    
     systemInstruction: `You are a helpful farming assistant for Indian farmers.
 Always reply in the same native Indian language the user writes in (e.g., Hindi, Tamil, Telugu, Marathi, Bengali, Kannada, Punjabi, etc.).
 

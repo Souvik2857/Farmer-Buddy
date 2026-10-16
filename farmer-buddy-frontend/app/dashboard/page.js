@@ -12,7 +12,7 @@ const page = () => {
     const [userLogs, setUserLogs] = useState([])
     const [filteredLogs, setFilteredLogs] = useState([])
     const [currentLog, setcurrentLog] = useState(null)
-    const [isLogOpen, setisLogOpen] = useState(false)
+    const [isLogOpen, setisLogOpen] = useState(true)
     const logCondition = useRef()
     useEffect(() => {
         const verifiedAdmin=async()=>{
@@ -131,7 +131,7 @@ const page = () => {
     </div>)
     })}
       </div>
-      {isLogOpen&&<div className='absolute top-10 right-20'><UserDataCard email={currentLog.email} createdAt={currentLog.createdAt}></UserDataCard>
+      {isLogOpen&&<div className='absolute top-7 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt}></UserDataCard>
       <Image src={'/cross.svg'} onClick={()=>{closeCurrentLog()}} className='absolute top-3 right-2 cursor-pointer' alt='cross' width={20} height={20}></Image></div>}
     </div>
 
