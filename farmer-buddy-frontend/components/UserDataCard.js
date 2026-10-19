@@ -21,9 +21,9 @@ const UserDataCard = ({ email, createdAt }) => {
     getUserDetails();
   }, []);
 
-
   return (
-    <div className="border w-[70vw] h-[75vh] flex justify-evenly bg-amber-100">
+    <div className="border w-[70vw] h-[80vh] bg-amber-100">
+      <div className="flex justify-evenly">
       <div className="border h-60 w-55 mt-10 bg-[#1FB8D0] font-bold">
         <p className="text-center text-white">Weather details</p>
         <div className="ml-1 mt-1">
@@ -54,12 +54,31 @@ const UserDataCard = ({ email, createdAt }) => {
         </div>
       </div>
       <div className="border h-60 w-55 mt-10 bg-[#B3B3B3] font-bold relative">
-        <p className="text-center text-white">Image</p>
+        <p className="text-center text-white">Image is not provided</p>
         <div>
           <Image loading="eager" src={userDetails?.picture} fill className="object-cover"></Image>
         </div>
       </div>
+      </div>
+        <div className="conversation grid grid-cols-2 mt-2 gap-20">
+          <div className="ml-3">
+            <p className="text-left ml-4">User</p>
+              <p className="border p-2 rounded-b-xl rounded-r-xl">{userDetails?.conversation?.user}</p>
+              <div className="flex flex-col mt-3">
+            <label>Admin Decision</label>
+            <input type="text" className="border" placeholder="Enter your decision" />
+              </div>
+            </div>
+          <div className="mr-3">
+            <p className="text-right mr-4">Model</p>
+              <p className="border p-2 rounded-b-xl rounded-l-xl max-h-[250px] scrollbar-none overflow-y-auto">{userDetails?.conversation?.gemini}</p>
+            </div>
+        </div>
+        <div className="flex justify-center mt-4">
+        <button className="border px-5 py-2 bg-green-700 text-white font-bold cursor-pointer rounded-xl">Approved</button>
+        </div>
     </div>
+
   );
 };
 

@@ -30,6 +30,7 @@ const userHistory = new mongoose.Schema({
   summary: { type: String, default: "" },
   confidence: { type: String, default: "" },
   isApproved: { type: String },
+  adminFeedback:{type:String,default:""},
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -35,8 +35,8 @@ const Page = () => {
       const { userData } = user;
       const { data } = history;
       setcoOrdinates({
-        latitude:Number(userData?.cordinates?.latitude),
-        longitude:Number(userData?.cordinates?.longitude)
+        latitude:userData?.cordinates?.latitude,
+        longitude:userData?.cordinates?.longitude
       })
       const languageCode = getUserLanguage(userData.location.state);
       setlanguage(languageCode.bcp47);   

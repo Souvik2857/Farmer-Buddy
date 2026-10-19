@@ -119,9 +119,7 @@ const page = () => {
           <button ref={logCondition} className='mt-6 rounded-xl py-2 font-bold px-3 bg-white '>
             All Logs
           </button>
-
-      {/* Category box */}
-      <div className="mt-5 h-[55vh] flex flex-col gap-5 items-center rounded-[28px] overflow-auto bg-[#D9D9D9]">
+      <div className="mt-5 h-[55vh] flex flex-col gap-5 items-center rounded-[28px] overflow-auto scrollbar-none bg-[#D9D9D9]">
       {filteredLogs.map((items,index)=>{
 
       return  (<div key={index} className={`mt-5 grid grid-cols-3 w-full max-w-[60vw] items-center justify-center rounded-2xl ${bgByConfidence[items?.confidence]} px-3 py-6 text-sm text-black`}>
@@ -131,7 +129,7 @@ const page = () => {
     </div>)
     })}
       </div>
-      {isLogOpen&&<div className='absolute top-7 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt}></UserDataCard>
+      {isLogOpen&&<div className='absolute top-4 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt}></UserDataCard>
       <Image src={'/cross.svg'} onClick={()=>{closeCurrentLog()}} className='absolute top-3 right-2 cursor-pointer' alt='cross' width={20} height={20}></Image></div>}
     </div>
 

@@ -174,7 +174,7 @@ const soilDataHandler = async (req, res) => {
     
     const { latitude, longitude } = req.body;
 
-    const soil = await getSoilData(latitude, longitude);
+    const soil = await getSoilData(Number(latitude), Number(longitude));
 
     return res.status(200).json({ status: 200, data: soil });
   } catch (err) {
