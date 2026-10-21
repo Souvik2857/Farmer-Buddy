@@ -160,7 +160,8 @@ const Page = () => {
    }
     
   }
-
+  console.log(arr);
+  
   const removeSelectedPicture=()=>{
     setImagePreview(null)
     setuserFile(null)
@@ -254,6 +255,7 @@ const startStreaming = () => {
                     </div>
                   </div>
                 )}
+                
                 {msg.isApproved && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
@@ -272,6 +274,13 @@ const startStreaming = () => {
                   <div className="flex justify-start">
                     <div className=" max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-bl-sm bg-zinc-700 text-white break-words">
                       {msg.conversation.gemini}
+                    </div>
+                  </div>
+                )}
+                {msg?.adminFeedback && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
+                      <p>Admin Dicision:</p>{msg.adminFeedback}
                     </div>
                   </div>
                 )}
