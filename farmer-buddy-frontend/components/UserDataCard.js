@@ -1,8 +1,10 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import Image from "next/image";
-const UserDataCard = ({ email, createdAt }) => {
+const UserDataCard = ({ email, createdAt ,adminDetails}) => {
   const [userDetails, setuserDetails] = useState({});
+  const [adminReviewData, setAdminReviewData] = useState()
+  const adminFeedback = useRef()
   useEffect(() => {
     const getUserDetails = async () => {
       const res = await fetch(
@@ -21,6 +23,24 @@ const UserDataCard = ({ email, createdAt }) => {
     getUserDetails();
   }, []);
 
+  const setAdminFeedback=async(approval)=>{
+    setAdminReviewData({adminEmail:adminDetails.email,feedback:adminFeedback.current.value,userEmail:email,createdAt:createdAt,approval:approval})   
+    const res=await fetch('http://localhost:5000/api/v1/admin/reviewChat',
+      {
+        method:'POST',
+        headers:{
+           "Content-Type": "application/json",
+        },
+        body:JSON.stringify(adminReviewData)
+      }
+    )
+    const data=await res.json()
+    if(data.status==200){
+      alert('Admin feedback updated successfully')
+    }
+  }
+
+  
   return (
     <div className="border w-[70vw] h-[80vh] bg-amber-100">
       <div className="flex justify-evenly">
@@ -66,7 +86,7 @@ const UserDataCard = ({ email, createdAt }) => {
               <p className="border p-2 rounded-b-xl rounded-r-xl">{userDetails?.conversation?.user}</p>
               <div className="flex flex-col mt-3">
             <label>Admin Decision</label>
-            <input type="text" className="border" placeholder="Enter your decision" />
+            <input type="text" ref={adminFeedback} className="border" placeholder="Enter your decision" />
               </div>
             </div>
           <div className="mr-3">
@@ -75,7 +95,7 @@ const UserDataCard = ({ email, createdAt }) => {
             </div>
         </div>
         <div className="flex justify-center mt-4">
-        <button className="border px-5 py-2 bg-green-700 text-white font-bold cursor-pointer rounded-xl">Approved</button>
+        <button onClick={()=>{setAdminFeedback("True")}} className="border px-5 py-2 bg-green-700 text-white font-bold cursor-pointer rounded-xl">Approved</button>
         </div>
     </div>
 

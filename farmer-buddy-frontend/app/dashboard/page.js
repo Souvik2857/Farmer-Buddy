@@ -12,7 +12,8 @@ const page = () => {
     const [userLogs, setUserLogs] = useState([])
     const [filteredLogs, setFilteredLogs] = useState([])
     const [currentLog, setcurrentLog] = useState(null)
-    const [isLogOpen, setisLogOpen] = useState(true)
+    const [isLogOpen, setisLogOpen] = useState(false)
+    const [adminDetails, setadminDetails] = useState()
     const logCondition = useRef()
     useEffect(() => {
         const verifiedAdmin=async()=>{
@@ -21,7 +22,7 @@ const page = () => {
                     credentials:'include'
                 })
                 const data=await res.json()
-                
+                setadminDetails(data.adminData)
                 if(data.status===200){
                     setVerified(true)
                     setloading(false)
@@ -78,8 +79,8 @@ const page = () => {
     setFilteredLogs(filtered)
 }
   const setCurrentLog=(email,createdAt)=>{
+    setcurrentLog({email:email,createdAt:createdAt})
       setisLogOpen(true)
-      setcurrentLog({email:email,createdAt:createdAt})
   }
   const closeCurrentLog=()=>{
     setisLogOpen(false)
@@ -129,7 +130,7 @@ const page = () => {
     </div>)
     })}
       </div>
-      {isLogOpen&&<div className='absolute top-4 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt}></UserDataCard>
+      {isLogOpen&&<div className='absolute top-4 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt} adminDetails={adminDetails}></UserDataCard>
       <Image src={'/cross.svg'} onClick={()=>{closeCurrentLog()}} className='absolute top-3 right-2 cursor-pointer' alt='cross' width={20} height={20}></Image></div>}
     </div>
 

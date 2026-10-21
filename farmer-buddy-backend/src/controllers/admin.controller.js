@@ -146,22 +146,26 @@ const chatFullDetails=async(req,res)=>{
 
 const reviewChat = async(req, res) => {
     try{
-        const { adminEmail, feedback, approval } = req.user;
+        const { adminEmail, feedback, approval } = req.body;
         const { userEmail,createdAt } = req.body;
+
         if(!(await userinfo.findOne({ email: userEmail }))){
             return res.status(404).json({ error: 'User not found' });
         }
+        if(!(await adminInfo.findOne({ email: adminEmail }))){
+            return res.status(404).json({ error: 'Admin not found found' });
+        }
 
         const chat = await userConvo.findOneAndUpdate(
-            { chatId: userEmail, createdAt },
-            { adminfeedback: feedback, approval },
-            { new: true }
+            {userEmail,createdAt},         
+            { adminFeedback: feedback,isApproved:approval,confidence:approval=='True'?"green":confidence},     
+            {returnDocument:'after'}
         );
 
         if(!chat){
             return res.status(404).json({error: 'Chat did not match any'});
         }
-        res.status(200).json({success: true, chat})
+        res.status(200).json({status:200, chat})
     }catch(err){
         res.status(500).json({error: err.message});
     }

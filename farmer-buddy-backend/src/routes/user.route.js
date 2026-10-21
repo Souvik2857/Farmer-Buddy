@@ -2,7 +2,7 @@ import { Router } from "express";
 import { upload } from "../middleware/multer.js";
 import { newUser,getUser, updateUser, soilDataHandler, getAiAnalyze, getHist, weatherHandler} from "../controllers/user.controller.js";
 import auth from "../middleware/auth.js";
-import { chatFullDetails, getAdmin, getUserByAdminLoct, login, logout, signup } from "../controllers/admin.controller.js";
+import { chatFullDetails, getAdmin, getUserByAdminLoct, login, logout, reviewChat, signup } from "../controllers/admin.controller.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
 
 
@@ -22,4 +22,5 @@ router.route('/logout').get(verifyAdmin,logout)
 router.route('/verifyAdmin').get(verifyAdmin,getAdmin)
 router.route('/getUserDetails').get(verifyAdmin,getUserByAdminLoct)
 router.route('/userFullDetails').post(chatFullDetails)
+router.route('/reviewChat').post(reviewChat)
 export default router;
