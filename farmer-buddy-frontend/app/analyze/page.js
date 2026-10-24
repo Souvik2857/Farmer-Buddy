@@ -17,7 +17,26 @@ const Page = () => {
   const [userFile, setuserFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [arr, setarr] = useState([])
+  const [isVerified, setisVerified] = useState(false)
+  const [adminData, setadminData] = useState({})
   const text=useRef()
+
+
+  useEffect(() => {
+    const verifyAdmin=async()=>{
+      const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",
+        {
+          credentials:'include'
+        }
+      )
+      const data=await res.json()
+      setisVerified(true)
+      setadminData({...adminData,...data.adminData})
+    }
+    verifyAdmin()
+  }, [])
+  
+
  useEffect(() => {
   if (session === undefined) {
     return;
@@ -25,7 +44,8 @@ const Page = () => {
 
   const getUserData = async () => {
     try {
-      const [res, res2] = await Promise.all([
+      if(session){
+        const [res, res2] = await Promise.all([
         fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" }),
         fetch("http://localhost:5000/api/v1/user/getConversation", { credentials: "include" })
       ]);
@@ -38,14 +58,32 @@ const Page = () => {
         latitude:userData?.cordinates?.latitude,
         longitude:userData?.cordinates?.longitude
       })
-      const languageCode = getUserLanguage(userData.location.state);
+      const languageCode = getUserLanguage(userData?.location?.state);
       setlanguage(languageCode.bcp47);   
       setarr(data);
+    }
+    if(isVerified){
+        const res=await fetch("http://localhost:5000/api/v1/admin/getAdminConversation",
+          {
+            credentials:"include"
+          }
+        )
+        const {data} = await res.json()
+        
+        setcoOrdinates({
+        latitude:adminData?.coordinates?.latitude,
+        longitude:adminData?.coordinates?.longitude
+      })
+      const languageCode = getUserLanguage(adminData?.location?.state);
+      setlanguage(languageCode.bcp47);   
+      setarr(data);         
+    }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
 
+  
   const userLocation = async () => {
     try {
       const location = await getLocation();
@@ -67,17 +105,17 @@ const Page = () => {
     }
   };
 
-  if (session) {
+  if (session || isVerified) {
     getUserData();
   } else {
     userLocation();
   }
-}, [session]);
-  
+}, [session,isVerified]);
   
   const getUserFieldDetails=async()=>{
       setisLoading(true)
       try {
+        
         const [res,res2]=await Promise.all([
             fetch('http://localhost:5000/api/v1/user/getWeather',{
               method:'POST',
@@ -134,12 +172,24 @@ const Page = () => {
      formData.append("files", userFile)
      formData.append("weatherData", JSON.stringify(fieldDetails.weather))
      formData.append("soilData", JSON.stringify(fieldDetails.soilData))
-     const res=await fetch("http://localhost:5000/api/v1/user/analyze",{
-       method:'POST',
-       credentials:"include",
-       body:formData
-     })
+     let res
+     if(session){
+       res=await fetch("http://localhost:5000/api/v1/user/analyze",{
+         method:'POST',
+         credentials:"include",
+         body:formData
+        })
+      }
+      else if(isVerified){
+        res=await fetch("http://localhost:5000/api/v1/user/analyzeAdmin",{
+         method:'POST',
+         credentials:"include",
+         body:formData
+        })
+      }
     const data=await res.json()
+    console.log(data);
+    
     const {conversation}=data
     const user=conversation?.user
     const gemini=conversation?.gemini

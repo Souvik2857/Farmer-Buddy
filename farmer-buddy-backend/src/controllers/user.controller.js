@@ -58,10 +58,12 @@ const getUser = async (req, res) => {
 
 const getHist = async (req, res) => {
   try{
-    const {email}=req.user
+    
+    const {email}=req.user || req.admin
     const userHist=await userConvo.find({userEmail:email}).select(
       "-_id -userEmail -confidence"
     )
+    
     return res.status(200).json({status:200,data:userHist})
   } catch (err) {
     console.error(`Loading Failed`, err.message);
@@ -189,11 +191,12 @@ try {
     }
     const {weatherData}=req.body
     const {soilData}=req.body
-    const user=await userinfo.findOne({email:req.user.email})
+    const email=req?.user?.email || req?.admin?.email
+    const user=await userinfo.findOne({email:email})
     const userLocation=user.location?.city 
     const fileUrl = req.file?.path;
     const data = req.body; 
-    const userData = req.user;
+    const userData = req.user || req.admin;
     const prompt = JSON.parse(data.text).text;
     let soil
     if(soilData != 'undefined'){

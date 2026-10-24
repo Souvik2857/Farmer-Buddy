@@ -22,7 +22,7 @@ const generateAccessAndRefreshToken=async(id)=>{
 
 const getAdmin = async(req, res) => {
     try{
-        const { email } = req.body;
+        const { email } = req.admin;
 
         const adminData = await adminInfo.findOne({email}).select("-password -refreshToken");
         
@@ -31,6 +31,7 @@ const getAdmin = async(req, res) => {
         }
         return res.status(200).json({status:200, adminData});
     }catch(err){
+
         return res.status(500).json({error: err.message});
     }
 }
@@ -86,7 +87,7 @@ const logout=async(req,res)=>{
     try {
         
         const admin=await adminInfo.findByIdAndUpdate(
-            req.body._id,
+            req.admin._id,
             {
                 $set:{
                     refreshToken:null
@@ -112,7 +113,7 @@ const logout=async(req,res)=>{
 
 const getUserByAdminLoct = async(req, res) => {
     try{
-        const { email } = req.body;
+        const { email } = req.admin;
 
         const admin = await adminInfo.findOne({ email });
         
