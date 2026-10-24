@@ -74,8 +74,8 @@ useEffect(() => {
           height={90}
           className="rounded-2xl ml-2 mt-2 mb-2  justify-self-start"
         ></Image>
-        <div className="justify-self-center text-white text-3x">{!pageName?"":(
-          <div className="w-90 border p-5 rounded-2xl bg-[#FFF1A6]"><p className="text-center text-3xl font-bold text-green-500 ">Farmer Buddy</p></div>
+        <div className="justify-self-center text-white text-3xl">{!pageName?"":(
+          <div className="max-sm:hidden md:w-90 border p-5 rounded-2xl bg-[#FFF1A6]"><p className="text-center max-sm:text-xl md:text-3xl font-bold text-green-500 ">Farmer Buddy</p></div>
         )}</div>
         <div className="justify-self-end flex items-center gap-1">
           {!session && !isLoggedIn? (
