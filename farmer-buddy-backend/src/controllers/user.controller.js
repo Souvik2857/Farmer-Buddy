@@ -186,6 +186,7 @@ const soilDataHandler = async (req, res) => {
 };
 const getAiAnalyze = async (req, res) => {
 try {
+  //have to create a function that can only send the Model review without saving and its based on the user email is undefined
     if (req.body.text==="{}") {
       return res.status(404).json({status:404,message:"Enter message"})
     }

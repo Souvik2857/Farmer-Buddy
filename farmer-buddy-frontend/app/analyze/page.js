@@ -188,8 +188,6 @@ const Page = () => {
         })
       }
     const data=await res.json()
-    console.log(data);
-    
     const {conversation}=data
     const user=conversation?.user
     const gemini=conversation?.gemini
