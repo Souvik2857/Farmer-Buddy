@@ -119,7 +119,7 @@ const getUserByAdminLoct = async(req, res) => {
         if(!admin){
             return res.status(404).json({error: 'Not Admin/ Admin not found'});
         }
-        const users = await userConvo.find({location: admin.location.city}).select("-summary -picture");
+        const users = await userConvo.find({location: admin.location.city}).sort({createdAt:-1}).select("-summary -picture");
         res.status(200).json({city: admin.location.city, users});
     }catch(err){
         res.status(500).json({error: err.message});

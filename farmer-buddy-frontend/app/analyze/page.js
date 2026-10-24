@@ -148,9 +148,6 @@ const Page = () => {
     setarr([...arr,{conversation:{user:user,gemini:gemini},picture:picture,isApproved:data.isApproved}])
     setImagePreview(null)
     setuserFile(null)
-    const utterance = new SpeechSynthesisUtterance(gemini);
-    utterance.lang = "bn-IN";   
-    speechSynthesis.speak(utterance);
     text.current.value=""
    } catch (error) {
     console.log("there is a error in submiting the data ",error);
@@ -160,7 +157,6 @@ const Page = () => {
    }
     
   }
-  console.log(arr);
   
   const removeSelectedPicture=()=>{
     setImagePreview(null)
