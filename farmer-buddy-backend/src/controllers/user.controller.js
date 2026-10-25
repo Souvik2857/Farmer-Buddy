@@ -186,10 +186,62 @@ const soilDataHandler = async (req, res) => {
 };
 const getAiAnalyze = async (req, res) => {
 try {
-  //have to create a function that can only send the Model review without saving and its based on the user email is undefined
-    if (req.body.text==="{}") {
+  if (req.body.text==="{}") {
       return res.status(404).json({status:404,message:"Enter message"})
     }
+    if(!req.user && !req.admin){
+    const {weatherData}=req.body
+    const {soilData}=req.body
+    const data = req.body; 
+    const fileUrl = req?.file?.path;
+    const prompt = JSON.parse(data.text).text;
+    let soil
+    if(soilData != 'undefined'){
+      soil=JSON.parse(soilData)
+    }
+    else{
+      soil=""
+    }
+    let weather
+    if(weatherData!= 'undefined'){
+      weather=JSON.parse(weatherData)
+    }
+    else{
+      weather=""
+    }
+    
+    let fileUpload=''
+    if(fileUrl)  {
+      fileUpload = await uploadonCloudinary(fileUrl);
+    }
+    const resData = await getAiResponse(prompt, fileUpload,weatherData,soilData);
+    const parsedResData=JSON.parse(resData)
+    const geminiReply=parsedResData.reply
+    const confidence=parsedResData.confidence
+    let approved=false
+    if (confidence==='green') {
+      approved="True"
+    }
+    else if(confidence==='yellow'){
+        approved="Moderate"
+    }
+    else if(confidence==='red'){
+        approved="Low"
+    }
+    else{
+      approved=null
+    }
+    const userConvoData={
+      conversation:{
+        user:prompt,
+        gemini:geminiReply
+      },
+      picture:fileUpload.replace("http","https") || '',
+      isApproved:approved
+    }
+    return res.status(200).json({...userConvoData});
+    }
+    
     const {weatherData}=req.body
     const {soilData}=req.body
     const email=req?.user?.email || req?.admin?.email

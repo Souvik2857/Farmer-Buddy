@@ -30,8 +30,10 @@ const Page = () => {
         }
       )
       const data=await res.json()
-      setisVerified(true)
-      setadminData({...adminData,...data.adminData})
+      if(data.status==200){
+        setisVerified(true)
+        setadminData({...adminData,...data.adminData})
+      }
     }
     verifyAdmin()
   }, [])
@@ -62,7 +64,7 @@ const Page = () => {
       setlanguage(languageCode.bcp47);   
       setarr(data);
     }
-    if(isVerified){
+    else if(isVerified){
         const res=await fetch("http://localhost:5000/api/v1/admin/getAdminConversation",
           {
             credentials:"include"
@@ -107,10 +109,13 @@ const Page = () => {
 
   if (session || isVerified) {
     getUserData();
+    
   } else {
     userLocation();
+    
   }
 }, [session,isVerified]);
+
   
   const getUserFieldDetails=async()=>{
       setisLoading(true)
@@ -184,6 +189,12 @@ const Page = () => {
         res=await fetch("http://localhost:5000/api/v1/user/analyzeAdmin",{
          method:'POST',
          credentials:"include",
+         body:formData
+        })
+      }
+      else{
+        res=await fetch("http://localhost:5000/api/v1/user/logoutUserAnalyze",{
+         method:'POST',
          body:formData
         })
       }
@@ -283,9 +294,9 @@ const startStreaming = () => {
           </p>
 
           <div className="w-[90vw] h-[70vh] overflow-y-auto flex flex-col gap-3 p-3">
-            {arr.map((msg, index) => (
+            {arr?.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
-                {msg.picture && (
+                {msg?.picture && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 rounded-2xl rounded-br-sm text-white break-words">
                       <Image loading="lazy" src={`${msg.picture}`} height={150} width={150} alt="" />
@@ -295,12 +306,12 @@ const startStreaming = () => {
                 {msg?.conversation?.user && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
-                      {msg.conversation.user}
+                      {msg?.conversation?.user}
                     </div>
                   </div>
                 )}
                 
-                {msg.isApproved && (
+                {msg?.isApproved && (
                   <div className="flex justify-end">
                     <div className="max-w-[70%] px-3 py-2 text-xl rounded-2xl rounded-br-sm bg-blue-600 text-white break-words">
                       {msg.isApproved === 'Moderate' || msg.isApproved==='Low'?

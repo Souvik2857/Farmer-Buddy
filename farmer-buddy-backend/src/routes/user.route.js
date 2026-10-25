@@ -26,5 +26,5 @@ router.route('/analyzeAdmin').post(verifyAdmin,upload.single("files"),getAiAnaly
 router.route('/userFullDetails').post(chatFullDetails)
 router.route('/reviewChat').post(reviewChat)
 
-router.route('/logoutUser').post(upload.single("files"),getAiAnalyze)
+router.route('/logoutUserAnalyze').post(upload.single("files"),getAiAnalyze)
 export default router;
