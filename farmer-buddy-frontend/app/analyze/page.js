@@ -93,10 +93,9 @@ const Page = () => {
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${location.latitude}&longitude=${location.longitude}`
       );
       const data = await res.json();
-
+      
       const state = data.principalSubdivision;
       const languageCode = getUserLanguage(state);
-
       setlanguage(languageCode.bcp47);
       setcoOrdinates({
         latitude:location.latitude,
@@ -345,8 +344,8 @@ const startStreaming = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-[70vw] px-4 py-3 ">
-          <button className="border-none px-2 p-4 bg-green-400 rounded-xl cursor-pointer" onClick={()=>{
+        <div className="max-sm:flex justify-center min-[600px]:flex items-center gap-2 w-[70vw] px-4 py-3 ">
+          <button className="py-4 max-[580px]:px-3 py-1 text-[16px] min-[580px]:border-none px-2 p-2 p-4 bg-green-400 rounded-xl cursor-pointer" onClick={()=>{
             getUserFieldDetails()
           }}>Field Details</button>
           <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
@@ -402,7 +401,7 @@ const startStreaming = () => {
               name="text"
               onChange={handlechange}
               placeholder="Type Your Question Here..."
-              className="flex-1  bg-transparent outline-none text-sm text-gray-700 
+              className="md:flex-1  bg-transparent outline-none text-sm text-gray-700 
                      placeholder-gray-400 resize-none overflow-y-auto leading-6 "
             />
             <button onClick={()=>{startStreaming()}} className="p-1 flex-shrink-0 hover:bg-gray-50 rounded-lg cursor-pointer">
