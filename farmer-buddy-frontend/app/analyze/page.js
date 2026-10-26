@@ -399,6 +399,7 @@ const startStreaming = () => {
             <textarea ref={text}
               rows={1}
               name="text"
+              
               onChange={handlechange}
               placeholder="Type Your Question Here..."
               className="md:flex-1  bg-transparent outline-none text-sm text-gray-700 
