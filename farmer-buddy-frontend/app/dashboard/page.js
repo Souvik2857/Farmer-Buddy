@@ -98,23 +98,23 @@ const page = () => {
         <button
           type="button"
           onClick={()=>{filterdUser("Low")}}
-          className="p-5 cursor-pointer rounded-full bg-[#D40000] py-1 text-[16px] font-medium text-white"
+          className="p-5 border border-blue-800 focus:bg-green-800 cursor-pointer rounded-full bg-[#D40000] py-1 text-[16px] font-medium text-white"
           >
           Assistance Required
         </button>
         <button
           type="button"
           onClick={()=>{filterdUser("Moderate")}}
-          className="p-5 cursor-pointer rounded-full bg-[#FFA85C] py-1 text-[16px] font-medium text-[#1A1AFF]"
+          className="p-5 border border-black focus:bg-green-800 cursor-pointer rounded-full bg-[#FFA85C] py-1 text-[16px] font-medium text-white"
           >
           Moderate Issues
         </button>
         <button
           type="button"
           onClick={()=>{filterdUser("True")}}
-          className="p-5 cursor-pointer rounded-full bg-[#5CFF73] py-1 text-[16px] font-medium text-black"
+          className="p-5 border border-black focus:bg-green-800 cursor-pointer rounded-full bg-[#5CFF73] py-1 text-[16px] font-medium text-white "
           >
-          Correct Solutions
+          Correct Solution
         </button>
       </div>
           <button ref={logCondition} className='mt-6 rounded-xl py-2 font-bold px-3 bg-white '>
