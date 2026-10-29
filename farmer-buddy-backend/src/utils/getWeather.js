@@ -1,9 +1,8 @@
 const getWeather = async (latitude, longitude) => {
     try{
         const weatherRes = await fetch(`https://api.weatherapi.com/v1/current.json?key=${process.env.WEATHERAPI_KEY}&q=${latitude},${longitude}`);
-        const weatherData = await weatherRes.json();
-        console.log(weatherData);
         
+        const weatherData = await weatherRes.json();
         if(weatherData.error){
             return res.status(400).json({success: false, error: weatherData.error.message});
         }

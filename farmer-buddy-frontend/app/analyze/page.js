@@ -19,6 +19,7 @@ const Page = () => {
   const [arr, setarr] = useState([])
   const [isVerified, setisVerified] = useState(false)
   const [adminData, setadminData] = useState({})
+  const [feildData, setFeildData] = useState("")
   const text=useRef()
 
 
@@ -137,6 +138,20 @@ const Page = () => {
             })
         ])
         const [weatherData,soilData]=await Promise.all([res.json(),res2.json()])
+        if(weatherData.status==200 && soilData.status==200){
+          console.log("Weather and soil Data fetched");
+        }
+        else if(weatherData.status==200 && soilData.status!=200){
+          setFeildData("Weather Data fetched and there is a problem in fetching soil data")
+        }
+        else if(weatherData.status!=200 && soilData.status==200){
+          setFeildData("Soil Data fetched and there is a problem in fetching weather data");
+        }
+        else{
+          setFeildData("There is a problem in server to fetching feild details");
+          console.log("There is a problem in server to fetching feild details");
+          
+        }
         setfieldDetails({
           weather:{
             ...weatherData.data
@@ -172,6 +187,9 @@ const Page = () => {
     setisLoading(true)
    try {
      const formData=new FormData()
+     if(userInfo==""){
+      userInfo.text=text.current.value
+     }
      formData.append("text", JSON.stringify(userInfo))
      formData.append("files", userFile)
      formData.append("weatherData", JSON.stringify(fieldDetails.weather))
@@ -245,6 +263,8 @@ const Page = () => {
 
       if (event.results[i].isFinal) {
         text.current.value += transcript;  
+        console.log(transcript);
+        
       } else {
         text.current.value += transcript;  
          
@@ -286,7 +306,10 @@ const startStreaming = () => {
   
   return (
     <>
-      <div className="flex justify-center items-center flex-col">      
+      <div className="flex justify-center items-center flex-col">
+        {feildData && 
+       <div className="absolute bottom-30 bg-gray-800 text-white px-3 py-2">{feildData}</div>    
+        }
         <div className="analyze-ai flex flex-col items-center w-[78vw] h-[72vh]">
           <p className="text-xl text-center mt-6 mb-4">
             Ask me anything about crops, pests, weather, soil or farming
@@ -391,6 +414,7 @@ const startStreaming = () => {
                 alt="clip"
                 width={20}
                 height={20}
+                
               ></Image>
               <input name="file" onChange={userFileHandleChange} type="file" ref={file} className="hidden" />
             </button>
@@ -399,7 +423,7 @@ const startStreaming = () => {
             <textarea ref={text}
               rows={1}
               name="text"
-              
+              onKeyDown={(event)=>{event.key=="Enter"?sendData():""}}
               onChange={handlechange}
               placeholder="Type Your Question Here..."
               className="md:flex-1  bg-transparent outline-none text-sm text-gray-700 

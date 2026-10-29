@@ -165,7 +165,7 @@ const weatherHandler = async (req, res) => {
     if (!latitude || !longitude) {
       res.status(404).json({ error: "latitude, longitude required" });
     }
-    return res.status(200).json({ data });
+    return res.status(200).json({status:200, data });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
