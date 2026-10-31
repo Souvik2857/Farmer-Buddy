@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { getUserLanguage } from "@/utils/languageDetection.js";
+import { getLocation } from "@/utils/getUserLocation";
 import Image from "next/image";
 
 const Page = () => {
@@ -62,14 +63,17 @@ const Page = () => {
   let longitude
   let language
   useEffect(() => {
-    const getIpApi=async()=>{
-      const ipApi=await fetch('https://ipapi.co/json/')
-      const data=await ipApi.json()
+    const getUserLocation=async()=>{
+      const getUserLocation=await getLocation()
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${getUserLocation.latitude}&longitude=${getUserLocation.longitude}`
+      );
+      const data = await res.json();  
       dataCity=data.city
-      const state=data.region
-      const country=data.country_name
-      latitude=data.latitude
-      longitude=data.longitude
+      const state=data.principalSubdivision
+      const country=data.countryName
+      latitude=getUserLocation.latitude
+      longitude=getUserLocation.longitude
       language=getUserLanguage(state)
 
       
@@ -82,9 +86,9 @@ const Page = () => {
       })
     }
     getUserData()
-    getIpApi()
+    getUserLocation()
 
-  }, [session])
+  }, [session,isVerified])
 
 
 
