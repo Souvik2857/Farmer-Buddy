@@ -6,6 +6,7 @@ import { getUserLanguage } from "@/utils/languageDetection";
 import { getLocation } from "@/utils/getUserLocation";
 import GlowButton from "@/components/RingGlow";
 import Image from "next/image";
+import ChatThreadSkeleton from "@/components/ChatConverSationLoader";
 const Page = () => {
   const { data: session,status } = useSession();
   const [isLoading, setisLoading] = useState(false)
@@ -19,7 +20,8 @@ const Page = () => {
   const [arr, setarr] = useState([])
   const [isVerified, setisVerified] = useState(false)
   const [adminData, setadminData] = useState({})
-  const [feildData, setFeildData] = useState("")
+  const [feildData, setFeildData] = useState(false)
+  const [chatLoading, setchatLoading] = useState(true)
   const text=useRef()
 
 
@@ -64,6 +66,7 @@ const Page = () => {
       const languageCode = getUserLanguage(userData?.location?.state);
       setlanguage(languageCode.bcp47);   
       setarr(data);
+      setchatLoading(false)
     }
     else if(isVerified){
         const res=await fetch("http://localhost:5000/api/v1/admin/getAdminConversation",
@@ -79,7 +82,8 @@ const Page = () => {
       })
       const languageCode = getUserLanguage(adminData?.location?.state);
       setlanguage(languageCode.bcp47);   
-      setarr(data);         
+      setarr(data);    
+      setchatLoading(false)     
     }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -138,20 +142,7 @@ const Page = () => {
             })
         ])
         const [weatherData,soilData]=await Promise.all([res.json(),res2.json()])
-        if(weatherData.status==200 && soilData.status==200){
-          console.log("Weather and soil Data fetched");
-        }
-        else if(weatherData.status==200 && soilData.status!=200){
-          setFeildData("Weather Data fetched and there is a problem in fetching soil data")
-        }
-        else if(weatherData.status!=200 && soilData.status==200){
-          setFeildData("Soil Data fetched and there is a problem in fetching weather data");
-        }
-        else{
-          setFeildData("There is a problem in server to fetching feild details");
-          console.log("There is a problem in server to fetching feild details");
-          
-        }
+        setFeildData(true)
         setfieldDetails({
           weather:{
             ...weatherData.data
@@ -168,7 +159,6 @@ const Page = () => {
       }
       
   }
-
   
   const userFileHandleChange=(e)=>{
       const file=e.target.files[0]
@@ -308,7 +298,7 @@ const startStreaming = () => {
     <>
       <div className="flex justify-center items-center flex-col">
         {feildData && 
-       <div className="absolute bottom-30 bg-gray-800 text-white px-3 py-2">{feildData}</div>    
+       <div className="absolute bottom-30 bg-gray-800 text-white px-2 py-1 rounded-xl">Field data loaded</div>    
         }
         <div className="analyze-ai flex flex-col items-center w-[78vw] h-[72vh]">
           <p className="text-xl text-center mt-6 mb-4">
@@ -316,6 +306,7 @@ const startStreaming = () => {
           </p>
 
           <div className="w-[90vw] h-[70vh] overflow-y-auto flex flex-col gap-3 p-3">
+            {chatLoading?<ChatThreadSkeleton></ChatThreadSkeleton>:<>
             {arr?.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
                 {msg?.picture && (
@@ -363,7 +354,8 @@ const startStreaming = () => {
                 )}
 
               </div>
-            ))}
+            ))}</>
+          }
           </div>
         </div>
 

@@ -60,6 +60,7 @@ const AdminLogin = ({Name}) => {
         </label>
         <input
           type="email"
+          onKeyDown={(event)=>{event.key==="Enter"?postAdminData():""}}
           onChange={handler}
           placeholder="Enter your e-mail"
           name='email'
@@ -76,6 +77,7 @@ const AdminLogin = ({Name}) => {
           <input
             type={!isEyeOpen?'text':'password'}
             onChange={handler}
+            onKeyDown={(event)=>{event.key==="Enter"?postAdminData():""}}
             placeholder="Enter your password"
             name='password'
             className="h-11 w-full rounded-xs bg-white pl-4 pr-12 text-sm text-[#4A2412] placeholder:text-[#B5B5B5] outline-none"

@@ -214,7 +214,8 @@ try {
     if(fileUrl)  {
       fileUpload = await uploadonCloudinary(fileUrl);
     }
-    const resData = await getAiResponse(prompt, fileUpload,weatherData,soilData);
+    
+    const resData = await getAiResponse(null,prompt, fileUpload,weatherData,soilData);
     const parsedResData=JSON.parse(resData)
     const geminiReply=parsedResData.reply
     const confidence=parsedResData.confidence

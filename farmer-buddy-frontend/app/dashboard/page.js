@@ -4,6 +4,7 @@ import { useState,useEffect,useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import UserDataCard from '@/components/UserDataCard'
+import ChatSkeletonLoader from '@/components/LogLoading'
 const page = () => {
     const router=useRouter()
     const [verified, setVerified] = useState(false)
@@ -14,6 +15,7 @@ const page = () => {
     const [currentLog, setcurrentLog] = useState(null)
     const [isLogOpen, setisLogOpen] = useState(false)
     const [adminDetails, setadminDetails] = useState()
+    const [logLoading, setLogLoading] = useState(true)
     const logCondition = useRef()
     useEffect(() => {
         const verifiedAdmin=async()=>{
@@ -34,7 +36,8 @@ const page = () => {
                 const data=await userData.json()
                 setlocation(data.city)
                 setUserLogs([...userLogs,...data.users])
-                setFilteredLogs([...filteredLogs,...data.users])            
+                setFilteredLogs([...filteredLogs,...data.users])
+                setLogLoading(false)            
                 }
                 else{
                     setloading(false)
@@ -121,14 +124,16 @@ const page = () => {
             All Logs
           </button>
       <div className="mt-5 h-[55vh] flex flex-col gap-5 items-center rounded-[28px] overflow-auto scrollbar-none bg-[#D9D9D9]">
+       {logLoading? 
+      <ChatSkeletonLoader></ChatSkeletonLoader>:<>
       {filteredLogs.map((items,index)=>{
-
-      return  (<div key={index} className={`mt-5 grid grid-cols-3 w-full max-w-[60vw] items-center justify-center rounded-2xl ${bgByConfidence[items?.confidence]} px-3 py-6 text-sm text-black`}>
+      return  (<div onClick={()=>{setCurrentLog(items.userEmail,items.createdAt)}} key={index} className={`mt-5 cursor-pointer grid grid-cols-3 w-full max-w-[60vw] items-center justify-center rounded-2xl ${bgByConfidence[items?.confidence]} px-3 py-6 text-sm text-black`}>
       <span className="">•User: {items?.userEmail}</span>
       <span className="">{items?.conversation?.user}</span>
       <span className="flex justify-end"><Image onClick={()=>{setCurrentLog(items.userEmail,items.createdAt)}} src={'/expand.svg'} alt='expand' width={20} height={20} className='cursor-pointer'></Image></span>
     </div>)
-    })}
+    })}</>
+  }
       </div>
       {isLogOpen&&<div className='absolute top-4 right-4'><UserDataCard email={currentLog?.email} createdAt={currentLog?.createdAt} adminDetails={adminDetails}></UserDataCard>
       <Image src={'/cross.svg'} onClick={()=>{closeCurrentLog()}} className='absolute top-3 right-2 cursor-pointer' alt='cross' width={20} height={20}></Image></div>}
