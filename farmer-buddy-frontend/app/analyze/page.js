@@ -21,7 +21,7 @@ const Page = () => {
   const [isVerified, setisVerified] = useState(false)
   const [adminData, setadminData] = useState({})
   const [feildData, setFeildData] = useState(false)
-  const [chatLoading, setchatLoading] = useState(true)
+  const [chatLoading, setchatLoading] = useState(false)
   const text=useRef()
 
 
@@ -34,6 +34,7 @@ const Page = () => {
       )
       const data=await res.json()
       if(data.status==200){
+
         setisVerified(true)
         setadminData({...adminData,...data.adminData})
       }
@@ -50,6 +51,7 @@ const Page = () => {
   const getUserData = async () => {
     try {
       if(session){
+        setchatLoading(true)
         const [res, res2] = await Promise.all([
         fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" }),
         fetch("http://localhost:5000/api/v1/user/getConversation", { credentials: "include" })
@@ -69,6 +71,7 @@ const Page = () => {
       setchatLoading(false)
     }
     else if(isVerified){
+        setchatLoading(true)
         const res=await fetch("http://localhost:5000/api/v1/admin/getAdminConversation",
           {
             credentials:"include"
@@ -306,7 +309,7 @@ const startStreaming = () => {
           </p>
 
           <div className="w-[90vw] h-[70vh] overflow-y-auto flex flex-col gap-3 p-3">
-            {chatLoading?<ChatThreadSkeleton></ChatThreadSkeleton>:<>
+            {chatLoading ?<ChatThreadSkeleton></ChatThreadSkeleton>:<>
             {arr?.map((msg, index) => (
               <div key={index} className="flex flex-col gap-2">
                 {msg?.picture && (
