@@ -145,7 +145,6 @@ const Page = () => {
             })
         ])
         const [weatherData,soilData]=await Promise.all([res.json(),res2.json()])
-        //setFeildData(true)
         alert('Field Data Fetched Succesfully');
         setfieldDetails({
           weather:{
@@ -257,8 +256,6 @@ const Page = () => {
 
       if (event.results[i].isFinal) {
         text.current.value += transcript;  
-        console.log(transcript);
-        
       } else {
         text.current.value += transcript;  
          
