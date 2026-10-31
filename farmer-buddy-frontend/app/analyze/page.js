@@ -209,6 +209,10 @@ const Page = () => {
         })
       }
     const data=await res.json()
+    if(data.status){
+      alert("Model is Expreriencing hign demand please try again")
+    }
+    
     const {conversation}=data
     const user=conversation?.user
     const gemini=conversation?.gemini
