@@ -19,7 +19,7 @@ const Navbar = () => {
   useEffect(() => {
     const getAdminStatus=async()=>{
       try {
-        const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+        const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/verifyAdmin",{
           credentials:'include'
         })
         const data=await res.json()
@@ -50,7 +50,7 @@ useEffect(() => {
       signOut({ callbackUrl: '/login' })
     }
     else if(verified){
-      const res=await fetch("http://localhost:5000/api/v1/admin/logout",{
+      const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/logout",{
         credentials:'include'
       })
       const data=await res.json()

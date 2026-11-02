@@ -21,7 +21,7 @@ const AdminLogin = ({Name}) => {
     const postAdminData=async()=>{
         verifiCation.current.style.color="green"
         verifiCation.current.innerText="Verifying Admin Credentials"
-        const res=await fetch('http://localhost:5000/api/v1/admin/adminLogin',
+        const res=await fetch('https://farmer-buddy-vtfw.onrender.com/api/v1/admin/adminLogin',
           {
             method:'POST',
             credentials:'include',

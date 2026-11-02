@@ -73,7 +73,8 @@ const login = async(req, res) => {
         )
         const options={
             httpOnly:true,
-            secure:true
+            secure:true,
+            sameSite:"none"
         }
         return res.status(200).cookie("accessToken",accessToken,options).cookie("refreshToken",refreshToken,options).json({status:200,data:loggedInAdmin})
         
@@ -99,7 +100,8 @@ const logout=async(req,res)=>{
         )
         const options={
             httpOnly:true,
-            secure:true
+            secure:true,
+            sameSite:"none"
         };
         return res.status(200).clearCookie("refreshToken",options).
         clearCookie("accessToken",options).json({status:200,message:"User logged Out"})

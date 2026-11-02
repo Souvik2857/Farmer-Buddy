@@ -27,7 +27,7 @@ const Page = () => {
 
   useEffect(() => {
     const verifyAdmin=async()=>{
-      const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",
+      const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/verifyAdmin",
         {
           credentials:'include'
         }
@@ -53,8 +53,8 @@ const Page = () => {
       if(session){
         setchatLoading(true)
         const [res, res2] = await Promise.all([
-        fetch("http://localhost:5000/api/v1/user/getUser", { credentials: "include" }),
-        fetch("http://localhost:5000/api/v1/user/getConversation", { credentials: "include" })
+        fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getUser", { credentials: "include" }),
+        fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getConversation", { credentials: "include" })
       ]);
 
       const [user, history] = await Promise.all([res.json(), res2.json()]);
@@ -72,7 +72,7 @@ const Page = () => {
     }
     else if(isVerified){
         setchatLoading(true)
-        const res=await fetch("http://localhost:5000/api/v1/admin/getAdminConversation",
+        const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/getAdminConversation",
           {
             credentials:"include"
           }
@@ -129,14 +129,14 @@ const Page = () => {
       try {
         
         const [res,res2]=await Promise.all([
-            fetch('http://localhost:5000/api/v1/user/getWeather',{
+            fetch('https://farmer-buddy-vtfw.onrender.com/api/v1/user/getWeather',{
               method:'POST',
               headers:{
                 'Content-Type':'application/json'
               },
               body:JSON.stringify({latitude:coOrdinates?.latitude,longitude:coOrdinates?.longitude})
             }),
-            fetch('http://localhost:5000/api/v1/user/getSoilData',{
+            fetch('https://farmer-buddy-vtfw.onrender.com/api/v1/user/getSoilData',{
               method:'POST',
               headers:{
                 'Content-Type':'application/json'
@@ -189,21 +189,21 @@ const Page = () => {
      formData.append("soilData", JSON.stringify(fieldDetails.soilData))
      let res
      if(session){
-       res=await fetch("http://localhost:5000/api/v1/user/analyze",{
+       res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/analyze",{
          method:'POST',
          credentials:"include",
          body:formData
         })
       }
       else if(isVerified){
-        res=await fetch("http://localhost:5000/api/v1/user/analyzeAdmin",{
+        res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/analyzeAdmin",{
          method:'POST',
          credentials:"include",
          body:formData
         })
       }
       else{
-        res=await fetch("http://localhost:5000/api/v1/user/logoutUserAnalyze",{
+        res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/logoutUserAnalyze",{
          method:'POST',
          body:formData
         })

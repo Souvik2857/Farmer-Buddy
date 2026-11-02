@@ -8,7 +8,7 @@ const UserDataCard = ({ email, createdAt ,adminDetails}) => {
   useEffect(() => {
     const getUserDetails = async () => {
       const res = await fetch(
-        "http://localhost:5000/api/v1/admin/userFullDetails",
+        "https://farmer-buddy-vtfw.onrender.com/api/v1/admin/userFullDetails",
         {
           method: "POST",
           headers: {
@@ -25,7 +25,7 @@ const UserDataCard = ({ email, createdAt ,adminDetails}) => {
 
   const setAdminFeedback=async(approval)=>{
     setAdminReviewData({adminEmail:adminDetails.email,feedback:adminFeedback.current.value,userEmail:email,createdAt:createdAt,approval:approval})   
-    const res=await fetch('http://localhost:5000/api/v1/admin/reviewChat',
+    const res=await fetch('https://farmer-buddy-vtfw.onrender.com/api/v1/admin/reviewChat',
       {
         method:'POST',
         headers:{

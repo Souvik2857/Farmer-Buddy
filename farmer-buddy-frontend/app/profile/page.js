@@ -15,7 +15,7 @@ const Page = () => {
   useEffect(() => {
     const verifyAdmin=async()=>{
       try {
-        const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+        const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/verifyAdmin",{
           credentials:'include'
         })
         const data=await res.json()
@@ -49,10 +49,11 @@ const Page = () => {
   const avatar = useRef();
 
   const getUserData=async()=>{
-    const res=await fetch("http://localhost:5000/api/v1/user/getUser",{
+    const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getUser",{
       credentials:"include"
     })
     const data=await res.json()
+
     setForm(data.userData) 
     setSelectedFile(data.userData?.avatar)
     if (data.userData?.avatar) setPreview(data.userData.avatar.replace("http://", "https://"));
@@ -121,7 +122,7 @@ const Page = () => {
   form.append("state", userData.state)
 
 
-  const res=await fetch("http://localhost:5000/api/v1/user/updateUser",
+  const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/updateUser",
     {
       credentials:"include",
       method:"PUT",
@@ -167,7 +168,7 @@ const Page = () => {
             type="text"
             
             className="border w-full px-3 py-2"
-            value={formData?.username ??""}
+            value={formData?.username}
             onChange={handleChange}
             name="username"
             placeholder="Enter your name"
@@ -180,7 +181,7 @@ const Page = () => {
             type="text"
             readOnly
             className="border w-full px-3 py-2"
-            value={formData?.email ??""}
+            value={formData?.email}
             name="email"
             placeholder="Place Email"
             />

@@ -12,7 +12,7 @@ const Page = () => {
   useEffect(() => {
     const verifyAdmin=async()=>{
       try {
-        const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+        const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/verifyAdmin",{
           credentials:'include'
         })
         const data=await res.json()

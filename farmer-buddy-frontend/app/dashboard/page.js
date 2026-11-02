@@ -20,7 +20,7 @@ const page = () => {
     useEffect(() => {
         const verifiedAdmin=async()=>{
             try {
-                const res=await fetch("http://localhost:5000/api/v1/admin/verifyAdmin",{
+                const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/verifyAdmin",{
                     credentials:'include'
                 })
                 const data=await res.json()
@@ -28,7 +28,7 @@ const page = () => {
                 if(data.status===200){
                     setVerified(true)
                     setloading(false)
-                const userData=await fetch("http://localhost:5000/api/v1/admin/getUserDetails",
+                const userData=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/admin/getUserDetails",
                   {
                     credentials:'include'
                   }
