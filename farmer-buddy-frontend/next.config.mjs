@@ -13,7 +13,14 @@ const nextConfig = {
       },
     ],
   },
-  
+  async rewrites() {
+    return [
+      {
+        source: '/api/backend/:path*',
+        destination: 'https://farmer-buddy-vtfw.onrender.com/api/v1/:path*',
+      },
+    ];
+  }, 
 };
 
 export default nextConfig;
