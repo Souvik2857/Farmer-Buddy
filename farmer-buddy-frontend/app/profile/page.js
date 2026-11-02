@@ -49,7 +49,7 @@ const Page = () => {
   const avatar = useRef();
 
   const getUserData=async()=>{
-    const res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getUser",{
+    const res=await fetch("/api/backend/user/getUser",{
       credentials:"include"
     })
     const data=await res.json()
