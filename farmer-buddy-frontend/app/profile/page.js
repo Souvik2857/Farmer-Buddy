@@ -53,7 +53,9 @@ const Page = () => {
 
 
   useEffect(() => {  
-    if(session){
+    if(!session || isVerified){
+      return
+    }
     const getUserData=async()=>{
       const res=await fetch("/api/backend/user/getUser",{
         credentials:"include"
@@ -66,8 +68,8 @@ const Page = () => {
       
     }
     getUserData()
-  }
-}, [session])
+  
+}, [session,isVerified])
 
 
   let dataCity

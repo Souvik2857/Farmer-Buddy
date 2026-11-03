@@ -4,7 +4,8 @@ async function auth(req,res,next){
     try{
         const token=await getToken({
             req,
-            secret:process.env.NEXTAUTH_SECRET
+            secret:process.env.NEXTAUTH_SECRET,
+            secureCookie:true
     })
         
         if(!token){
