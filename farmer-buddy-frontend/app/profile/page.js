@@ -11,6 +11,11 @@ const Page = () => {
   const { data: session, status } = useSession();
   const [isVerified, setisVerified] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [formData, setForm] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState("/avatar.svg");
+  const [userData, setUserData] = useState({})
+  const avatar = useRef();
   const router = useRouter();
   useEffect(() => {
     const verifyAdmin=async()=>{
@@ -34,7 +39,9 @@ const Page = () => {
     }
  verifyAdmin()
   }, [])
+
   
+
   useEffect(() => {
     if(isLoading || status ==="loading"){
       return
@@ -42,11 +49,7 @@ const Page = () => {
     if (!session && !isVerified ) router.push("/login");
   }, [status, router,isLoading,session,isVerified]);
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState("/avatar.svg");
-  const [formData, setForm] = useState({});
-  const [userData, setUserData] = useState({})
-  const avatar = useRef();
+
 
   const getUserData=async()=>{
     const res=await fetch("/api/backend/user/getUser",{
