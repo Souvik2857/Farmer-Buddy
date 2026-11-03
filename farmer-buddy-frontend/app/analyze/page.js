@@ -53,8 +53,8 @@ const Page = () => {
       if(session){
         setchatLoading(true)
         const [res, res2] = await Promise.all([
-        fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getUser", { credentials: "include" }),
-        fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/getConversation", { credentials: "include" })
+        fetch("/api/backend/user/getUser", { credentials: "include" }),
+        fetch("api/backend/user/getConversation", { credentials: "include" })
       ]);
 
       const [user, history] = await Promise.all([res.json(), res2.json()]);
