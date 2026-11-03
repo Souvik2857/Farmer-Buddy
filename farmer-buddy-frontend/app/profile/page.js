@@ -168,7 +168,7 @@ const Page = () => {
             type="text"
             
             className="border w-full px-3 py-2"
-            value={formData?.username}
+            value={formData?.username??""}
             onChange={handleChange}
             name="username"
             placeholder="Enter your name"
@@ -181,7 +181,7 @@ const Page = () => {
             type="text"
             readOnly
             className="border w-full px-3 py-2"
-            value={formData?.email}
+            value={formData?.email??""}
             name="email"
             placeholder="Place Email"
             />
