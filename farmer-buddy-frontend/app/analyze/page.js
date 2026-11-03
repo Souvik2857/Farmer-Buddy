@@ -206,7 +206,7 @@ const Page = () => {
         })
       }
     const data=await res.json()
-    if(data.status){
+    if(data.status>=500){
       alert("Model is Expreriencing hign demand please try again")
     }
     
