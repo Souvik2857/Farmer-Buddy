@@ -180,9 +180,6 @@ const Page = () => {
     setisLoading(true)
    try {
      const formData=new FormData()
-     if(userInfo.text==""){
-      userInfo.text=text.current.value
-     }
      formData.append("text", JSON.stringify(userInfo))
      formData.append("files", userFile)
      formData.append("weatherData", JSON.stringify(fieldDetails.weather))
@@ -260,6 +257,7 @@ const Page = () => {
 
       if (event.results[i].isFinal) {
         text.current.value += transcript;  
+        setUserInfo({...userInfo,text:text.current.value})
       } else {
         text.current.value += transcript;  
          
