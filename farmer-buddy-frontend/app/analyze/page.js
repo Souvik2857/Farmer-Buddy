@@ -180,7 +180,7 @@ const Page = () => {
     setisLoading(true)
    try {
      const formData=new FormData()
-     if(userInfo==""){
+     if(userInfo.text==""){
       userInfo.text=text.current.value
      }
      formData.append("text", JSON.stringify(userInfo))
