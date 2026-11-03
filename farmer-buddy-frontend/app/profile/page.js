@@ -95,10 +95,6 @@ const Page = () => {
     getUserLocation()
 
   }, [session,isVerified])
-  useEffect(() => {
-    email.current.value=formData.email
-    username.current.value=formData.username
-  }, [isVerified])
   
   const fileTrigger = () => {
     avatar.current.click();
@@ -175,7 +171,7 @@ const Page = () => {
             type="text"
             ref={username}
             className="border w-full px-3 py-2"
-            value={formData?.username}
+            value={formData?.username || ""}
             onChange={handleChange}
             name="username"
             placeholder="Enter your name"
@@ -189,7 +185,7 @@ const Page = () => {
             ref={email}
             readOnly
             className="border w-full px-3 py-2"
-            value={formData?.email}
+            value={formData?.email || ""}
             name="email"
             placeholder="Place Email"
             />
