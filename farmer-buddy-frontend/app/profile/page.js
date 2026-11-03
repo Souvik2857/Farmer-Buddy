@@ -52,18 +52,24 @@ const Page = () => {
   }, [status, router,isLoading,session,isVerified]);
 
 
-
-  const getUserData=async()=>{
-    const res=await fetch("/api/backend/user/getUser",{
-      credentials:"include"
-    })
-    const data=await res.json()
-
-    setForm(data.userData) 
-    setSelectedFile(data.userData?.avatar)
-    if (data.userData?.avatar) setPreview(data.userData.avatar.replace("http://", "https://"));
-
+  useEffect(() => {  
+    if(session){
+    const getUserData=async()=>{
+      const res=await fetch("/api/backend/user/getUser",{
+        credentials:"include"
+      })
+      const data=await res.json()
+      
+      setForm(data.userData) 
+      setSelectedFile(data.userData?.avatar)
+      if (data.userData?.avatar) setPreview(data.userData.avatar.replace("http://", "https://"));
+      
+    }
+    getUserData()
   }
+}, [session])
+
+
   let dataCity
   let latitude
   let longitude
@@ -91,7 +97,6 @@ const Page = () => {
                 "state":state
       })
     }
-    getUserData()
     getUserLocation()
 
   }, [session,isVerified])
