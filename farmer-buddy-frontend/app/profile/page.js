@@ -17,6 +17,8 @@ const Page = () => {
   const [userData, setUserData] = useState({})
   const avatar = useRef();
   const router = useRouter();
+  const email = useRef()
+  const username = useRef()
   useEffect(() => {
     const verifyAdmin=async()=>{
       try {
@@ -93,9 +95,11 @@ const Page = () => {
     getUserLocation()
 
   }, [session,isVerified])
-
-
-
+  useEffect(() => {
+    email.current.value=formData.email
+    username.current.value=formData.username
+  }, [isVerified])
+  
   const fileTrigger = () => {
     avatar.current.click();
   };
@@ -169,7 +173,7 @@ const Page = () => {
           <p className="mb-1">Name</p>
           <input
             type="text"
-            
+            ref={username}
             className="border w-full px-3 py-2"
             value={formData?.username}
             onChange={handleChange}
@@ -182,6 +186,7 @@ const Page = () => {
           <p className="mb-1">Email</p>
           <input
             type="text"
+            ref={email}
             readOnly
             className="border w-full px-3 py-2"
             value={formData?.email}
