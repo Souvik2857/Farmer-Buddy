@@ -186,7 +186,7 @@ const Page = () => {
      formData.append("soilData", JSON.stringify(fieldDetails.soilData))
      let res
      if(session){
-       res=await fetch("https://farmer-buddy-vtfw.onrender.com/api/v1/user/analyze",{
+       res=await fetch("/api/backend/user/analyze",{
          method:'POST',
          credentials:"include",
          body:formData
