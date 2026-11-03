@@ -74,7 +74,7 @@ const UserDataCard = ({ email, createdAt ,adminDetails}) => {
         </div>
       </div>
       <div className="border h-60 w-55 mt-10 bg-[#B3B3B3] font-bold relative">
-        <p className="text-center text-white">Image is not provided</p>
+        <p className="text-center text-white">{!userDetails.picture?"Image is not provided":""}</p>
         <div>
           <Image loading="eager" src={userDetails?.picture} fill className="object-cover"></Image>
         </div>
