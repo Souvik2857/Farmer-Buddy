@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middleware/multer.js";
+import limiter from "../middleware/rateLimiter.js";
 import { newUser,getUser, updateUser, soilDataHandler, getAiAnalyze, getHist, weatherHandler} from "../controllers/user.controller.js";
 import auth from "../middleware/auth.js";
 import { chatFullDetails, getAdmin, getUserByAdminLoct, login, logout, reviewChat, signup } from "../controllers/admin.controller.js";
@@ -16,7 +17,7 @@ router.route('/getWeather').post(weatherHandler)
 router.route('/getSoilData').post(soilDataHandler)
 
 
-router.route('/adminLogin').post(login)
+router.route('/adminLogin').post(limiter,login)
 router.route('/adminSignup').post(signup)
 router.route('/logout').get(verifyAdmin,logout)
 router.route('/getAdminConversation').get(verifyAdmin,getHist)
