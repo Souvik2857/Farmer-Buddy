@@ -36,7 +36,7 @@ const AdminLogin = ({Name}) => {
             router.push('/profile')
             setisLoggedIn(true)
           }
-          else if(data.status===401 || data.status===404){
+          else if(data.status===401 || data.status===404 || data.status==429){
           verifiCation.current.style.color="red"
           verifiCation.current.innerText=`${data.message}`        
         }
