@@ -362,16 +362,13 @@ const startStreaming = () => {
           </div>
         </div>
 
-        <div className="max-sm:flex justify-center min-[600px]:flex items-center gap-2 w-[70vw] px-4 py-3 ">
-          {/* <button className="max-[580px]:px-3 py-1 text-[16px] min-[580px]:border-none px-2 p-2 p-4 bg-green-400 rounded-xl cursor-pointer hover: bg-green-700 py-4" onClick={()=>{
-            getUserFieldDetails()
-          }}>Field Details</button> */
-          
+        <div className="max-[400px]:flex justify-center gap-0 w-[60vw] min-[400px]:flex min-[600px]:flex items-center gap-2 w-[70vw] px-4 py-3 ">
+                
           <button
-              className="max-[580px]:px-3 min-[580px]:border-none px-2 py-4 text-[16px] bg-green-400 rounded-xl cursor-pointer transition duration-200 hover:bg-green-700 hover:shadow-md active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2"
+              className="max-[400px]:text-xs max-[580px]:px-3 min-[580px]:border-none px-2 py-4 text-[16px] bg-green-400 rounded-xl cursor-pointer transition duration-200 hover:bg-green-700 hover:shadow-md active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2"
               onClick={() => {
                 getUserFieldDetails();
-              }}>Field Details</button>}
+              }}>Field Details</button>
 
           <div className="flex items-center gap-2 relative flex-1 bg-white rounded-xl px-4 py-2.5 border border-gray-200 shadow-sm">
             
