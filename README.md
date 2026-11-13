@@ -26,6 +26,6 @@ Farmer Buddy brings these needs together in one accessible farming assistant. It
 
 ## Contributors
 
-- **[Souvik Sarkar](https://github.com/Souvik2857)** — Frontend, authentication, and DevOps engineering
+- **[Souvik Sarkar](https://github.com/Souvik2857)** — Lead Frontend & Platform Engineer: full frontend development, authentication, hosting, and major backend contributions
 - **[Tapu Roy](https://github.com/TapuRoy007)** — Backend engineering
 - **[DipBijoy Tapadar](https://github.com/GamingGodM24)** — UI/UX design
