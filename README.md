@@ -8,6 +8,8 @@ Farmer Buddy is an accessible AI-powered farming assistant that helps farmers un
 
 ## What Problem Does Farmer Buddy Solve?
 
+Farmer Buddy addresses the challenges farmers face when reliable, timely, and personalized agricultural guidance is difficult to access. It brings crop support, image-based analysis, local weather and soil information, and native-language assistance together in one accessible platform.
+
 - **Limited access to timely farming guidance:** Farmers need quick, practical support for crop health, pests, soil, weather, and day-to-day farming decisions.
 - **Difficulty identifying crop problems:** Crop diseases and health issues can be difficult to recognize without image-based assistance.
 - **Lack of location-specific information:** Weather and soil conditions can vary by area, making general advice less useful.
