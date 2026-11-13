@@ -6,7 +6,10 @@
 
 ## What Problem Does Farmer Buddy Solve?
 
-Farmers often need quick, practical guidance about crop health, pests, soil, weather, and day-to-day farming decisions. Finding reliable advice in a familiar language can be difficult, especially when a problem needs to be identified from a crop image or understood in the context of local field conditions.
+- **Limited access to timely farming guidance:** Farmers need quick, practical support for crop health, pests, soil, weather, and day-to-day farming decisions.
+- **Difficulty identifying crop problems:** Crop diseases and health issues can be difficult to recognize without image-based assistance.
+- **Lack of location-specific information:** Weather and soil conditions can vary by area, making general advice less useful.
+- **Language barriers:** Reliable agricultural advice is not always available in a farmer’s familiar language.
 
 Farmer Buddy brings these needs together in one accessible farming assistant. It helps farmers understand crop-related problems earlier, make more informed decisions, and receive guidance in their native Indian language using their questions, crop images, location, weather, and soil conditions.
 
