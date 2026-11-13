@@ -1,5 +1,7 @@
 # Farmer Buddy
 
+Farmer Buddy is an accessible AI-powered farming assistant that helps farmers understand crop-related problems earlier, make informed decisions, and receive guidance in their native Indian language using their questions, crop images, location, weather, and soil conditions.
+
 ## Live Website
 
 **[Visit Farmer Buddy](https://farmer-buddy-peach.vercel.app)**
@@ -10,8 +12,6 @@
 - **Difficulty identifying crop problems:** Crop diseases and health issues can be difficult to recognize without image-based assistance.
 - **Lack of location-specific information:** Weather and soil conditions can vary by area, making general advice less useful.
 - **Language barriers:** Reliable agricultural advice is not always available in a farmer’s familiar language.
-
-Farmer Buddy brings these needs together in one accessible farming assistant. It helps farmers understand crop-related problems earlier, make more informed decisions, and receive guidance in their native Indian language using their questions, crop images, location, weather, and soil conditions.
 
 ## Features
 
