@@ -33,4 +33,4 @@ Farmer Buddy addresses the challenges farmers face when reliable, timely, and pe
 
 - **[Souvik Sarkar](https://github.com/Souvik2857)** — Lead Frontend & Platform Engineer: full frontend development, authentication, hosting, and significant backend contributions
 - **[Tapu Roy](https://github.com/TapuRoy007)** — Lead Backend Engineer: core backend architecture and implementation of user and admin controller functionality
-- **[Dipbijoy Tapadar](https://github.com/DipbiGonnaSucceed)** — UI/UX & Responsive Design Lead: interface design, user experience, and responsive layout implementation
+- **[Dipbijoy Tapadar](https://github.com/CalmCompilerDipbijoy)** — UI/UX & Responsive Design Lead: interface design, user experience, and responsive layout implementation
