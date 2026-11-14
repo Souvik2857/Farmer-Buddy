@@ -3,7 +3,7 @@ import { upload } from "../middleware/multer.js";
 import limiter from "../middleware/rateLimiter.js";
 import { newUser,getUser, updateUser, soilDataHandler, getAiAnalyze, getHist, weatherHandler} from "../controllers/user.controller.js";
 import auth from "../middleware/auth.js";
-import { chatFullDetails, getAdmin, getUserByAdminLoct, login, logout, reviewChat, signup } from "../controllers/admin.controller.js";
+import { chatFullDetails, getAdmin, getUserByAdminLoct, login, logout, reviewChat} from "../controllers/admin.controller.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
 
 
@@ -18,7 +18,6 @@ router.route('/getSoilData').post(soilDataHandler)
 
 
 router.route('/adminLogin').post(limiter,login)
-router.route('/adminSignup').post(signup)
 router.route('/logout').get(verifyAdmin,logout)
 router.route('/getAdminConversation').get(verifyAdmin,getHist)
 router.route('/verifyAdmin').get(verifyAdmin,getAdmin)

@@ -88,11 +88,7 @@ const AdminLogin = ({Name}) => {
         </div>
       </div>
 
-      <div className="mt-3 text-right">
-        <a href="#" className="text-xs font-medium text-[#4A2412]">
-          Forget Password?
-        </a>
-      </div>
+      
       <div ref={verifiCation} className='text-center text-red-900 font-bold'></div>
       <button
       onClick={()=>{postAdminData()}}
